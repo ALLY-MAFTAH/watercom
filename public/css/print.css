@@ -1,0 +1,5 @@
+@media print {
+    td {
+      white-space: pre-line !important;
+    }
+  }
