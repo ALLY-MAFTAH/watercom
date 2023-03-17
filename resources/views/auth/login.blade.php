@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.9">
+
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title> Login - Tanga Water Com</title>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
@@ -32,7 +33,7 @@
             </div>
         </div>
     </div>
-    <div class="row justify-content-md-center">
+    <div class="row justify-content-md-center text-center">
         <div class="wrapper pb-2">
             <div class="logo">
                 <img src="{{ asset('images/water.png') }}" alt="">

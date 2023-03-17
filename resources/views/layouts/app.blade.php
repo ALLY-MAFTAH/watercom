@@ -11,7 +11,6 @@
     <title> @yield('title') | {{ setting('App Name', "Tanga Watercom") }}</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/water.png') }}">
 
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     {{-- DATA TABLE --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
@@ -232,6 +231,7 @@
     <x:notify-messages />
     @yield('scripts')
     @notifyJs
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     <script src="https://use.fontawesome.com/3076bdb328.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
