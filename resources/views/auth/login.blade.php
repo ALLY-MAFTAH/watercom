@@ -22,7 +22,7 @@
         <div class="row">
             <div class="col-1">
                 <a class="btn btsn-sm btn-outline-light"
-                    href="{{ route('home') }}"style="color:white; text-decoration:none"><i class="fa fa-arrow-left"></i>
+                    href="https://morningskygeneral.co.tz" style="color:white; text-decoration:none"><i class="fa fa-arrow-left"></i>
                 </a>
             </div>
             <div class="col-10 text-center pb-4">
