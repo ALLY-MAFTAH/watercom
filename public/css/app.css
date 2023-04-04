@@ -195,7 +195,8 @@ a {
         left: 0;
         padding: 1rem 1rem 0 0
     }
-/*
+
+    /*
     .show {
         width: calc(var(--nav-width) + 156px)
     }
@@ -322,13 +323,3 @@ input[type=number]:focus,
     /* border: 0.25px solid rgb(196, 195, 195) !important; */
 }
 
-#cartCollapse {
-    /* width: 700px; */
-    /* border-width: 0px; */
-    /* position: absolute; */
-    top: 50%;
-    left: 50%;
-    /* margin-left: -350px; */
-    /* transform: translateY(-50%);
-    z-index: 999; */
-  }
