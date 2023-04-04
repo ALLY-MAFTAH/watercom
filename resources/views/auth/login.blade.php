@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=0.9">
 
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title> Login - Tanga Water Com</title>
+    <title> Login - {{ setting('App Name', 'Tanga Watercom Depot') }}
+    </title>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     <style>
@@ -21,14 +22,16 @@
     <div class="text-center text-bold pt-4" style="color:white">
         <div class="row">
             <div class="col-1">
-                <a class="btn btsn-sm btn-outline-light"
-                    href="https://morningskygeneral.co.tz" style="color:white; text-decoration:none"><i class="fa fa-arrow-left"></i>
+                <a class="btn btsn-sm btn-outline-light" href="https://morningskygeneral.co.tz"
+                    style="color:white; text-decoration:none"><i class="fa fa-arrow-left"></i>
                 </a>
             </div>
             <div class="col-10 text-center pb-4">
                 <h1 class="text-center"
                     style="text-shadow: 3px 3px rgb(50, 49, 49);font-family:Verdana, Geneva, Tahoma, sans-serif;"><b>
-                        TANGA WATER COM
+                        {{-- TANGA WATER COM --}}
+                        {{ setting('App Name', 'Tanga Watercom Depot') }}
+
                     </b></h1>
             </div>
         </div>

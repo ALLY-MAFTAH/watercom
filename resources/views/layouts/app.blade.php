@@ -45,8 +45,8 @@
             <div class="header_toggle ">
                 <h3
                     style="text-shadow: 0.5px 0.5px white;font-family:Verdana, Geneva, Tahoma, sans-serif;color:var(--first-color)">
-                    <b> TANGA WATER COM</b>
-                    {{-- <b>{{setting('App Name')}}</b> --}}
+                    {{-- <b> TANGA WATER COM</b> --}}
+                    <b>{{setting('App Name',"Tanga Watercom Depot")}}</b>
                 </h3>
             </div>
             {{-- <a href="{{route('test_sms')}}" class="btn btn-dark">Send SMS</a> --}}

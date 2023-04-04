@@ -17,7 +17,7 @@
             <div class=" shadow-lg card"style="min-width: 250px; ">
                 <div class="card-header text-center"
                     style="background:rgb(185, 185, 247); color: var(--first-color); font-weight:bold">
-                    {{ __('Tanga Water Com Login') }}
+                    {{setting('App Name',"Tanga Watercom Depot")}}
                 </div>
 
                 <div class="card-body">
