@@ -6,20 +6,20 @@
 @endsection
 @section('content')
     <div class="card">
-        <div class="card-header nav-tabs">
+        {{-- <div class="card-header nav-tabs">
             <a style="width: 49.5%" class=" btn-block btn bt-primary" id="tab1-button"><b
                     style="font-size:18px">Wholesaling</b></a>
             <a style="width: 49.5%" class=" btn-block btn bt-primary" id="tab2-button"><b
                     style="font-size:18px">Retailing</b></a>
-        </div>
+        </div> --}}
         <div class="card-body">
             <div class="tabs-container">
                 <div class="tab-content" id="tab1-content" style="display: block;">
                     @include('includes.wholesale')
                 </div>
-                <div class="tab-content" id="tab2-content" style="display: none;">
+                {{-- <div class="tab-content" id="tab2-content" style="display: none;">
                     @include('includes.retail')
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
