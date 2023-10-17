@@ -66,7 +66,7 @@ class ResetPasswordController extends Controller
 
         // dd($response);
         if ($response == 'Sent') {
-            return redirect()->back()->with('status', trans('A reset link has been sent to your mobile number via sms.'));
+            return redirect()->back()->with('success', trans('A reset link has been sent to your mobile number via sms.'));
         } else {
             return redirect()->back()->withErrors(['error' => trans('A Network Error occurred. Please try again.')]);
         }

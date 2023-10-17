@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
@@ -62,7 +61,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('products/{product}/status', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
     Route::put('products/{product}/discount', [ProductController::class, 'toggleDiscount'])->name('products.toggle-discount');
 
-
     // SELLING CART
     Route::get('/sale-product', [SaleController::class, 'saleProduct'])->name('products.sale');
     Route::get('/carts', [SaleController::class, 'index'])->name('carts.index');
@@ -72,7 +70,6 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('update-cart', [SaleController::class, 'update'])->name('update.cart');
     Route::delete('remove-from-cart', [SaleController::class, 'remove'])->name('remove.from.cart');
     Route::get('empty-cart', [SaleController::class, 'empty'])->name('empty.cart');
-
 
     // CUSTOMERS ROUTES
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
@@ -90,11 +87,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/edit-order/{order}', [OrderController::class, 'putOrder'])->name('orders.edit');
     Route::delete('/delete-order/{order}', [OrderController::class, 'deleteOrder'])->name('orders.delete');
 
-
     // SALES ROUTES
     Route::get('/sales', [SaleController::class, 'allSales'])->name('sales.index');
-
-
 
     // REPORTS ROUTES
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
@@ -103,8 +97,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/customers-report', [ReportController::class, 'customersReport'])->name('reports.customers');
     Route::get('/orders-report', [ReportController::class, 'ordersReport'])->name('reports.customers');
 });
-
-
 
 Route::group(['middleware' => ['auth', 'role.user:' . Role::ADMIN, 'verified']], function () {
 
@@ -128,6 +120,7 @@ Route::group(['middleware' => ['auth', 'role.user:' . Role::ADMIN, 'verified']],
     Route::put('edit-role/{role}', [RoleController::class, 'putRole'])->name('roles.edit');
     Route::delete('/delete-role/{role}', [RoleController::class, 'deleteRole'])->name('roles.delete');
     Route::put('orders/{order}/status', [OrderController::class, 'toggleStatus'])->name('orders.toggle-status');
+
     // SETTINGS ROUTES
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/edit-setting', [SettingController::class, 'putSetting'])->name('settings.edit');

@@ -25,9 +25,7 @@
                 <div class="col text-right">
                     <a href="#" class="btn btn-sm btn-outline-primary collapsed" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-
                         <i class="feather icon-plus"></i> Add Customer
-
                     </a>
                 </div>
             </div>
@@ -87,7 +85,7 @@
                     <th style="max-width: 20px">#</th>
                     <th>Full Name</th>
                     <th>Mobile Number</th>
-                    <th>Purchase Number</th>
+                    <th>Number of Purchases</th>
                     <th class="text-center">Actions</th>
 
                 </thead>

@@ -12,8 +12,7 @@
                     <div class=" text-left">
                         <h5 class="my-0">
                             <span class="">
-                                <b>{{ __('STOCK') . ' - ' }}
-                                </b>
+                                <b>{{ __('STOCK') . ' - ' }}</b>
                                 <div class="btn btn-icon round counter" style="">
                                     {{ $stocks->count() }}
                                 </div>
