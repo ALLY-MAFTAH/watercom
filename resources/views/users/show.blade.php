@@ -100,19 +100,19 @@
                 <div class="col-md-5">
                     <div class="row">
                         <div class="col-4"><b> Name:</b> </div>
-                        <div class="col-8">{{ $watercom->name }}</div>
+                        <div class="col-8">{{ $user->name }}</div>
                     </div>
                     <div class="row">
-                        <div class="col-4"><b> Email:</b> </div>
-                        <div class="col-8">{{ $watercom->email }}</div>
+                        <div class="col-4"><b> Phone:</b> </div>
+                        <div class="col-8">{{ $user->mobile }}</div>
                     </div>
                     <div class="row">
                         <div class="col-4"><b> Role:</b> </div>
-                        <div class="col-8">{{ $watercom->role->name }}</div>
+                        <div class="col-8">{{ $user->role->name }}</div>
                     </div>
                     <div class="row">
                         <div class="col-4"><b> Created:</b> </div>
-                        <div class="col-8">{{ $watercom->created_at->format('D, d M Y \a\t H:i') }}</div>
+                        <div class="col-8">{{ $user->created_at->format('D, d M Y \a\t H:i') }}</div>
                     </div>
                 </div>
                 <div class="col-7">

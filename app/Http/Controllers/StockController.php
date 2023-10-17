@@ -61,7 +61,6 @@ class StockController extends Controller
     }
     public function putStock(Request $request, Stock $stock)
     {
-        // dd($request->all);
         try {
             $attributes = $request->validate([
                 'name' => 'required',
@@ -75,16 +74,18 @@ class StockController extends Controller
 
             $stock->update($attributes);
             ActivityLogHelper::addToLog(Auth::user()->name . ' Updated ' . $stock->name . ' in stock ');
+            $request->request->add([ 'has_discount' => $request->has_discount, 'stock_id' => $stock->id]); //add request
+
+            $productController = new ProductController();
+            $productController->putProduct($request, $stock->product);
+            // $stock->product->save();
+            // dd($stock->product->price);
+            notify()->success('You have successful edited stock');
+            return redirect()->back();
         } catch (QueryException $th) {
             notify()->error('Failed to edit stock. "' . $request->name . '" already exists.');
             return back();
         }
-        $request->request->add(['price' => $request->price, 'has_discount' => $request->has_discount, 'stock_id' => $stock->id]); //add request
-
-        $product = new ProductController();
-        $product->putProduct($request, $stock->product);
-        notify()->success('You have successful edited stock');
-        return redirect()->back();
     }
     public function toggleStatus(Request $request, Stock $stock)
     {

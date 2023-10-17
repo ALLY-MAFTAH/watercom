@@ -52,7 +52,7 @@
                                             style="float: left;max-width:115px; width: inaitial; background-color:rgb(238, 238, 242)">
                                             <option value="">Type</option>
                                             <option value="Water">Water</option>
-                                            <option value="Juice">Juice</option>
+                                            <option value="Soda">Soda</option>
                                         </select>
                                         @error('name')
                                             <span class="invalid-feedback" role="alert">
@@ -265,9 +265,9 @@
                                                                 <option value="Water"
                                                                     {{ $stock->type == 'Water' ? 'selected' : '' }}>
                                                                     Water</option>
-                                                                <option value="Juice"
-                                                                    {{ $stock->type == 'Juice' ? 'selected' : '' }}>
-                                                                    Juice</option>
+                                                                <option value="Soda"
+                                                                    {{ $stock->type == 'Soda' ? 'selected' : '' }}>
+                                                                    Soda</option>
                                                             </select>
                                                             @error('name')
                                                                 <span class="invalid-feedback" role="alert">

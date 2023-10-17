@@ -72,15 +72,15 @@
                                 <div class="card-body px-3 py-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="color-card">
-                                            <p class="mb-0 color-card-head">Today's Juice Sales</p>
-                                            <h2 class="text-white"> {{ number_format($todaysJuiceAmount, 0, '.', ',') }} Tsh
+                                            <p class="mb-0 color-card-head">Today's Soda Sales</p>
+                                            <h2 class="text-white"> {{ number_format($todaysSodaAmount, 0, '.', ',') }} Tsh
                                             </h2>
                                         </div>
                                         <i class="card-icon-indicator mdi mdi-cup bg-inverse-icon-danger"></i>
                                     </div>
                                     <h6 class="text-white">
-                                        @if ($todaysLeadingJuice != [])
-                                            {{ $todaysLeadingJuice->name . ' ' . $todaysLeadingJuice->volume . ' ' . $todaysLeadingJuice->measure }}
+                                        @if ($todaysLeadingSoda != [])
+                                            {{ $todaysLeadingSoda->name . ' ' . $todaysLeadingSoda->volume . ' ' . $todaysLeadingSoda->measure }}
                                             is leading
                                     </h6>
                                     @endif

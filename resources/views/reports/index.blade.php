@@ -183,13 +183,13 @@
                 <option value="quantity">Quantity</option>
                 <option value="price">Price</option>
                 <option value="date">Issued Date</option>
-                <option value="type">Juice/Water</option>
+                <option value="type">Soda/Water</option>
             `;
                 groupBySelect.innerHTML = `
                 <option value="seller">Cashier Name</option>
                 <option value="name">Product Name</option>
                 <option value="date">Issued Date</option>
-                <option value="type">Juice/Water</option>
+                <option value="type">Soda/Water</option>
             `;
             } else if (basedOnSelect.value === 'Customer') {
                 sortBySelect.innerHTML = `

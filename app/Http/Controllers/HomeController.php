@@ -28,10 +28,10 @@ class HomeController extends Controller
     public function index()
     {
         $todaysTotalAmount = 0;
-        $todaysJuiceAmount = 0;
+        $todaysSodaAmount = 0;
         $todaysWaterAmount = 0;
         $todaysTotalCustomers = 0;
-        $todaysLeadingJuice = null;
+        $todaysLeadingSoda = null;
         $todaysLeadingWater = null;
         $todaysLeadingProduct = null;
         $todaysTopSales = null;
@@ -58,14 +58,14 @@ class HomeController extends Controller
             $salesRevenue = Sale::whereYear('date', date('Y'))->sum('price');
 
             // WATER BASED
-            $todaysJuiceAmount = Sale::where('type', "Juice")->where(['date' => date('Y-m-d')])->sum('price');
-            $todaysJuiceSales = Sale::where('type', 'Juice')->where(['date' => date('Y-m-d')])->get();
-            $juiceIdFrequencies = array_count_values($todaysJuiceSales->pluck('stock_id')->toArray());
-            if ($juiceIdFrequencies != []) {
-                $mostFrequentJuiceId = array_search(max($juiceIdFrequencies), $juiceIdFrequencies);
-                $todaysLeadingJuice = Stock::find($mostFrequentJuiceId);
+            $todaysSodaAmount = Sale::where('type', "Soda")->where(['date' => date('Y-m-d')])->sum('price');
+            $todaysSodaSales = Sale::where('type', 'Soda')->where(['date' => date('Y-m-d')])->get();
+            $sodaIdFrequencies = array_count_values($todaysSodaSales->pluck('stock_id')->toArray());
+            if ($sodaIdFrequencies != []) {
+                $mostFrequentSodaId = array_search(max($sodaIdFrequencies), $sodaIdFrequencies);
+                $todaysLeadingSoda = Stock::find($mostFrequentSodaId);
             }
-            // JUICE BASED
+            // SODA BASED
             $todaysWaterAmount = Sale::where('type', "Water")->where(['date' => date('Y-m-d')])->sum('price');
             $todaysWaterSales = Sale::where('type', 'Water')->where(['date' => date('Y-m-d')])->get();
             $waterIdFrequencies = array_count_values($todaysWaterSales->pluck('stock_id')->toArray());
@@ -103,7 +103,7 @@ class HomeController extends Controller
         }
         return view('home.dashboard', compact(
             'todaysTotalAmount',
-            'todaysJuiceAmount',
+            'todaysSodaAmount',
             'todaysWaterAmount',
             'stockAmount',
             'thisWeekSalesAmount',
@@ -111,7 +111,7 @@ class HomeController extends Controller
             'thisMonthSalesAmount',
             'thisMonthProfit',
             'todaysTotalCustomers',
-            'todaysLeadingJuice',
+            'todaysLeadingSoda',
             'todaysLeadingWater',
             'todaysLeadingProduct',
             'todaysTopSales',

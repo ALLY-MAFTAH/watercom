@@ -48,8 +48,8 @@
                                             style="float: left;max-width:115px; width: inaitial; background-color:rgb(238, 238, 242)">
                                             <option value="Water" {{ $stock->type == 'Water' ? 'selected' : '' }}>
                                                 Water</option>
-                                            <option value="Juice" {{ $stock->type == 'Juice' ? 'selected' : '' }}>
-                                                Juice</option>
+                                            <option value="Soda" {{ $stock->type == 'Soda' ? 'selected' : '' }}>
+                                                Soda</option>
                                         </select>
                                         @error('name')
                                             <span class="invalid-feedback" role="alert">
@@ -159,14 +159,16 @@
                         <div class="col-4"><b> Quantity:</b> </div>
                         <div class="col-8">{{ $stock->quantity . ' ' . $stock->unit }}</div>
                     </div>
+                    @if (Auth::user()->role_id == 1)
                     <div class="row">
                         <div class="col-4"><b> Buying Price:</b> </div>
                         <div class="col-8">{{ number_format($stock->cost, 0, '.', ',') }} Tsh</div>
                     </div>
-                    <div class="row">
-                        <div class="col-4"><b> Selling Price:</b> </div>
-                        <div class="col-8">{{ number_format($stock->product->price, 0, '.', ',') }} Tsh</div>
-                    </div>
+                    @endif
+                        <div class="row">
+                            <div class="col-4"><b> Selling Price:</b> </div>
+                            <div class="col-8">{{ number_format($stock->product->price, 0, '.', ',') }} Tsh</div>
+                        </div>
                     <div class="row">
                         <div class="col-4"><b> Created:</b> </div>
                         <div class="col-8">{{ $stock->created_at->format('D, d M Y \a\t H:i') }}</div>

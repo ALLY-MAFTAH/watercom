@@ -10,6 +10,8 @@ use App\Models\Stock;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -82,15 +84,23 @@ class ProductController extends Controller
 
             $attributes['stock_id'] = $stock->id;
             $attributes['name'] = $stock->name;
-            $attributes['has_discount'] = $request->has_discount;
+
+            DB::listen(function ($query) {
+                Log::info($query->sql);
+                Log::info($query->bindings);
+            });
 
             $product->update($attributes);
+
             ActivityLogHelper::addToLog('Updated product ' . $product->name);
+
         } catch (QueryException $th) {
+
             notify()->error('Product "' . $request->name . '" with volume of "' . $request->quantity . '" already exists.');
             return back();
         }
         notify()->success('You have successful edited an product');
+
         return redirect()->back();
     }
 
