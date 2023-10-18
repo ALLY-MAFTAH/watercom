@@ -9,7 +9,7 @@
                                 <div style="background:white;">
                                     <h4 style="font-weight:bolder;font-size: 20px;">{{ $stock->name }} -
                                         {{ $stock->volume }} {{ $stock->measure }}</h4>
-                                    <div style="color:rgb(118, 7, 7); font-size: 15px;">Remained Amount:
+                                    <div style="color:rgb(118, 7, 7); font-size: 15px;">Remained Quantity:
                                         <b>{{ $stock->quantity }} </b> {{ $stock->unit }}
                                     </div>
                                     <a href="{{ route('stocks.show', $stock) }}" style="text-decoration: none">View</a>
