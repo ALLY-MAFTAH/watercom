@@ -6,9 +6,9 @@ use Illuminate\Routing\Controller;
 
 use App\Helpers\ActivityLogHelper;
 use App\Models\Customer;
-use App\Models\Good;
+use App\Models\UnpaidGood;
 use App\Models\Product;
-use App\Models\Sale;
+use App\Models\UnpaidSale;
 use App\Models\Stock;
 use App\Services\MessagingService;
 use Illuminate\Http\Request;
@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
-class SaleController extends Controller
+class UnpaidSaleController extends Controller
 {
 
     /**
@@ -40,13 +40,13 @@ class SaleController extends Controller
         $filteredStock = Stock::where(['name' => $filteredStockName])->first();
 
         if ($filteredDate != "All Days" && $filteredStockName != "All Products") {
-            $sales = Sale::where(['stock_id' => $filteredStock->id, 'date' => $filteredDate])->latest()->paginate(10);
+            $sales = UnpaidSale::where(['stock_id' => $filteredStock->id, 'date' => $filteredDate])->latest()->paginate(10);
         } elseif ($filteredDate == "All Days" && $filteredStockName != "All Products") {
-            $sales = Sale::where(['stock_id' => $filteredStock->id])->latest()->paginate(10);
+            $sales = UnpaidSale::where(['stock_id' => $filteredStock->id])->latest()->paginate(10);
         } elseif ($filteredStockName == "All Products" && $filteredDate != "All Days") {
-            $sales = Sale::where('date', $filteredDate)->latest()->paginate(10);
+            $sales = UnpaidSale::where('date', $filteredDate)->latest()->paginate(10);
         } else {
-            $sales = Sale::latest()->paginate(10);
+            $sales = UnpaidSale::latest()->paginate(10);
         }
         $selectedStockName = $filteredStockName;
         $selectedDate = $filteredDate;
@@ -58,117 +58,10 @@ class SaleController extends Controller
         return view('cart.index', compact('sales', 'products', 'stocks', 'allStocks', 'filteredDate', 'filteredStockName', 'selectedStockName', 'selectedDate'));
     }
 
-    // SELL PRODUCT
-    public function saleProduct(Request $request)
-    {
-        // dd(setting('App Name'));
-        $carts = session()->get('cart');
-        $purchases = [];
 
-        foreach ($carts as $cart) {
-            $product = Product::findOrFail($cart['id']);
-            $quantity = $cart['quantity'];
 
-            $stock = Stock::findOrFail($product->stock_id);
-            if ($quantity > $stock->quantity) {
-                notify()->error("Sorry! You can't sell " . $quantity . " " . $product->unit . " of " . $product->name . ' - ' . $product->volume . ' ' . $product->measure . ". Quantity remained is " . $stock->quantity . " " . $product->unit);
-                return back();
-            }
-        }
-
-        try {
-            foreach ($carts as $cart) {
-                $product = Product::findOrFail($cart['id']);
-                $quantity = $cart['quantity'];
-
-                $stock = Stock::findOrFail($product->stock_id);
-
-                $attributes = [
-                    'name' => $product->name,
-                    'type' => $product->type,
-                    'volume' => $product->volume,
-                    'measure' => $product->measure,
-                    'price' => $cart['price'] * $quantity,
-                    'quantity' => $quantity,
-                    'unit' => $product->unit,
-                    'seller' => Auth::user()->name,
-                    'product_id' => $product->id,
-                    'user_id' => Auth::user()->id,
-                    'date' => Carbon::now('GMT+3')->toDateString(),
-                    'stock_id' => $product->stock_id,
-                    'good_id' => 0,
-                    'status' => true,
-                ];
-                $sale = Sale::create($attributes);
-                $stock->sales()->save($sale);
-                $purchases[] = $sale;
-
-                $newQuantity = $stock->quantity - $quantity;
-                $stock->update([
-                    'quantity' => $newQuantity,
-                ]);
-                $stock->save();
-            }
-            $totalAmount = 0;
-            foreach ($purchases as $purchase) {
-                $totalAmount = $totalAmount + $purchase->price;
-            }
-            $attribute = [
-                'user_id' => Auth::user()->id,
-                'seller' => Auth::user()->name,
-                'customer_id' => 0,
-                'receipt_number' => $request->receipt_number ?? "",
-                'amount_paid' => $totalAmount,
-                'date' => Carbon::now('GMT+3')->toDateString(),
-            ];
-            $good = Good::create($attribute);
-            $at = ['good_id' => $good->id];
-            foreach ($purchases as $purchase) {
-                $purchase->update($at);
-                $good->purchases()->save($purchase);
-            }
-
-            if ($request->customer_id != null) {
-                $customer = Customer::findOrFail($request->customer_id);
-                $atr = ['customer_id' => $customer->id];
-                $good->update($atr);
-                $customer->goods()->save($good);
-
-                // MESSAGE CONTENT
-                $heading  = "Ndugu mteja,\nUmenunua bidhaa zifuatazo kutoka kwetu\n";
-                $boughtGoods = [];
-                foreach ($purchases as $key => $purchasedGood) {
-                    $boughtGoods[] = ++$key . ". " . $purchasedGood->name . " " . $purchasedGood->volume . " " . $purchasedGood->measure . " - " . $purchasedGood->quantity . " " . $purchasedGood->unit . "\n";
-                }
-                $totalCost = "Zinazogharimu Jumla ya Tsh " . number_format($totalAmount, 0, '.', ',') . ".\n";
-                $closing  = "Ahsante na karibu tena.";
-                $messageBody = $heading . implode('', $boughtGoods) . $totalCost . $closing;
-
-                $messagingService = new MessagingService();
-                $sendMessageResponse = $messagingService->sendMessage($customer->phone, $messageBody);
-
-                if ($sendMessageResponse == "Sent") {
-                    ActivityLogHelper::addToLog('Sent sms to customer. Number: ' . $customer->phone);
-                    notify()->success('Message successful sent.');
-                } else {
-                    notify()->error('Message not sent, crosscheck your inputs');
-                }
-            }
-
-            ActivityLogHelper::addToLog('Successful sold products.');
-            session()->forget('cart');
-        } catch (\Throwable $th) {
-            // dd($th->getMessage());
-            notify()->error($th->getMessage());
-            return back();
-        }
-
-        notify()->success('Sales recorded successfully');
-        return Redirect::back();
-    }
     public function saveUnpaidProduct(Request $request)
     {
-        dd(setting('App Name'));
         $carts = session()->get('cart');
         $purchases = [];
 
@@ -182,6 +75,7 @@ class SaleController extends Controller
                 return back();
             }
         }
+        dd($purchases);
 
         try {
             foreach ($carts as $cart) {
@@ -206,8 +100,8 @@ class SaleController extends Controller
                     'good_id' => 0,
                     'status' => true,
                 ];
-                $sale = Sale::create($attributes);
-                $stock->sales()->save($sale);
+                $sale = UnpaidSale::create($attributes);
+                // $stock->sales()->save($sale);
                 $purchases[] = $sale;
 
                 $newQuantity = $stock->quantity - $quantity;
@@ -228,11 +122,11 @@ class SaleController extends Controller
                 'amount_paid' => $totalAmount,
                 'date' => Carbon::now('GMT+3')->toDateString(),
             ];
-            $good = Good::create($attribute);
+            $good = UnpaidGood::create($attribute);
             $at = ['good_id' => $good->id];
             foreach ($purchases as $purchase) {
                 $purchase->update($at);
-                $good->purchases()->save($purchase);
+                $good->unpaidPurchases()->save($purchase);
             }
 
             if ($request->customer_id != null) {
@@ -243,13 +137,13 @@ class SaleController extends Controller
 
                 // MESSAGE CONTENT
                 $heading  = "Ndugu mteja,\nUmenunua bidhaa zifuatazo kutoka kwetu\n";
-                $boughtGoods = [];
-                foreach ($purchases as $key => $purchasedGood) {
-                    $boughtGoods[] = ++$key . ". " . $purchasedGood->name . " " . $purchasedGood->volume . " " . $purchasedGood->measure . " - " . $purchasedGood->quantity . " " . $purchasedGood->unit . "\n";
+                $boughtUnpaidGoods = [];
+                foreach ($purchases as $key => $purchasedUnpaidGood) {
+                    $boughtUnpaidGoods[] = ++$key . ". " . $purchasedUnpaidGood->name . " " . $purchasedUnpaidGood->volume . " " . $purchasedUnpaidGood->measure . " - " . $purchasedUnpaidGood->quantity . " " . $purchasedUnpaidGood->unit . "\n";
                 }
                 $totalCost = "Zinazogharimu Jumla ya Tsh " . number_format($totalAmount, 0, '.', ',') . ".\n";
                 $closing  = "Ahsante na karibu tena.";
-                $messageBody = $heading . implode('', $boughtGoods) . $totalCost . $closing;
+                $messageBody = $heading . implode('', $boughtUnpaidGoods) . $totalCost . $closing;
 
                 $messagingService = new MessagingService();
                 $sendMessageResponse = $messagingService->sendMessage($customer->phone, $messageBody);
@@ -270,7 +164,7 @@ class SaleController extends Controller
             return back();
         }
 
-        notify()->success('Sales recorded successfully');
+        notify()->success('UnpaidSales recorded successfully');
         return Redirect::back();
     }
     public function checkCart()
@@ -370,7 +264,7 @@ class SaleController extends Controller
         return back();
     }
 
-    public function allSales(Request $request)
+    public function allUnpaidSales(Request $request)
     {
         $filteredStockId = $request->get('filteredStockId', "All Products");
         $filteredDate = $request->get('filteredDate', "All Days");
@@ -379,18 +273,18 @@ class SaleController extends Controller
             $filteredDate = "All Days";
         }
 
-        $sales = Sale::latest()->get();
+        $sales = UnpaidSale::latest()->get();
         if ($filteredDate != "All Days" && $filteredStockId != "All Products") {
-            $sales = Sale::where(['stock_id' => $filteredStockId, 'date' => $filteredDate])->latest()->get();
+            $sales = UnpaidSale::where(['stock_id' => $filteredStockId, 'date' => $filteredDate])->latest()->get();
         } elseif ($filteredStockId != "All Products") {
-            $sales = Sale::where(['stock_id' => $filteredStockId])->latest()->get();
+            $sales = UnpaidSale::where(['stock_id' => $filteredStockId])->latest()->get();
         } elseif ($filteredDate != "All Days") {
-            $sales = Sale::where('date', $filteredDate)->latest()->get();
+            $sales = UnpaidSale::where('date', $filteredDate)->latest()->get();
         }
 
-        $boughtGoods = Good::latest()->get();
+        $boughtUnpaidGoods = UnpaidGood::latest()->get();
         if ($filteredDate != "All Days") {
-            $boughtGoods = Good::where('date', $filteredDate)->latest()->get();
+            $boughtUnpaidGoods = UnpaidGood::where('date', $filteredDate)->latest()->get();
         }
 
         $stocks = Stock::where('status', 1)->where('quantity', '>', 0)->get();
@@ -408,7 +302,7 @@ class SaleController extends Controller
             'filteredStockId',
             // 'selectedStockName',
             'selectedDate',
-            'boughtGoods'
+            'boughtUnpaidGoods'
         ));
     }
 }

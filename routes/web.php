@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
 
     // SELLING CART
     Route::get('/sale-product', [SaleController::class, 'saleProduct'])->name('products.sale');
+    Route::get('/save-unpaid-product', [UnpaidSaleController::class, 'saveUnpaidProduct'])->name('products.save_unpaid');
     Route::get('/carts', [SaleController::class, 'index'])->name('carts.index');
     Route::get('get-cart-data', [SaleController::class, 'getCartData'])->name('cart');
     Route::get('check-cart', [SaleController::class, 'checkCart'])->name('cart');
@@ -86,6 +87,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/show-order/{order}', [OrderController::class, 'showOrder'])->name('orders.show');
     Route::put('/edit-order/{order}', [OrderController::class, 'putOrder'])->name('orders.edit');
     Route::delete('/delete-order/{order}', [OrderController::class, 'deleteOrder'])->name('orders.delete');
+
+    // EXPENSES ROUTES
+    Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+    Route::post('/add-expense', [ExpenseController::class, 'postExpense'])->name('expenses.add');
+    Route::post('/send-expense', [ExpenseController::class, 'sendExpense'])->name('expenses.send');
+    Route::get('/show-expense/{expense}', [ExpenseController::class, 'showExpense'])->name('expenses.show');
+    Route::put('/edit-expense/{expense}', [ExpenseController::class, 'putExpense'])->name('expenses.edit');
+    Route::delete('/delete-expense/{expense}', [ExpenseController::class, 'deleteExpense'])->name('expenses.delete');
 
     // SALES ROUTES
     Route::get('/sales', [SaleController::class, 'allSales'])->name('sales.index');

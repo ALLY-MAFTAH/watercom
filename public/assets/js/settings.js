@@ -39,7 +39,7 @@
       $(".tiles").removeClass("selected");
       $(this).addClass("selected");
     });
-    
+
     $(".tiles.light").on("click", function() {
       console.log("blablabla");
       $(".navbar").removeClass(navbar_classes);
@@ -47,7 +47,7 @@
       $(".tiles").removeClass("selected");
       $(this).addClass("selected");
     });
-    
+
 
     //Horizontal menu in mobile
     $('[data-toggle="horizontal-menu-toggle"]').on("click", function() {
@@ -61,7 +61,7 @@
           navItemClicked.removeClass('show-submenu');
         }
         $(this).toggleClass('show-submenu');
-      }        
+      }
     });
 
     $(window).scroll(function() {

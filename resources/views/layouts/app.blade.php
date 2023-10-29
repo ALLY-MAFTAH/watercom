@@ -68,7 +68,7 @@
                 </div>
             @endif
             <div class="dropdown prof">
-                <a href="#"class="dropdowsn-toggle" style="text-decoration: none; color:var(--first-color)"
+                <a href="#"class="dropdown-toggle" style="text-decoration: none; color:var(--first-color)"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bx bx-user"></i>
                 </a>
@@ -149,6 +149,10 @@
                     <a href="{{ route('reports.index') }}"
                         class="nav_link {{ request()->routeIs('reports.index') ? 'active' : '' }}"> <i
                             class='bx bx-book nav_icon'></i> <span class="nav_name">Reports</span>
+                    </a>
+                    <a href="{{ route('expenses.index') }}"
+                        class="nav_link {{ request()->routeIs('expenses.index') ? 'active' : '' }}"> <i
+                            class='bx bx-book nav_icon'></i> <span class="nav_name">Expenses</span>
                     </a>
 
                 </div>

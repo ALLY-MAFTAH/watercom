@@ -171,9 +171,10 @@
                             '<td></td>' +
                             '</tr>' +
                             '<tr class="">' +
-                            '<td colspan="3" class="text-right ">' +
+                            '<td colspan="5" class="text-center ">' +
                             '<a href="{{ route('empty.cart') }}" class="btn btn-danger btn-sm my-2 mx-2"><i class=""></i>Empty Cart</a>' +
-                            '<button class="btn btn-sm my-2 mx-2 btn-success checkout-btn">Checkout</button>' +
+                            '<button class="btn btn-sm my-2 mx-2 btn-success checkout-btn">RECORD PAID SALE</button>' +
+                            '<button class="btn btn-sm my-2 mx-2 btn-warning unpaid-btn">SAVE UNPAID SALE</button>' +
                             '</td>' +
                             '</tr>';
                         '</tfoot>' +
@@ -270,9 +271,10 @@
                                         '<td></td>' +
                                         '</tr>' +
                                         '<tr class="">' +
-                                        '<td colspan="3" class="text-right ">' +
+                                        '<td colspan="5" class="text-center ">' +
                                         '<a href="{{ route('empty.cart') }}" class="btn btn-danger btn-sm my-2 mx-2"><i class=""></i>Empty Cart</a>' +
-                                        '<button class="btn btn-sm my-2 mx-2 btn-success checkout-btn">Checkout</button>' +
+                                        '<button class="btn btn-sm my-2 mx-2 btn-success checkout-btn">RECORD PAID SALE</button>' +
+                                        '<button class="btn btn-sm my-2 mx-2 btn-warning unpaid-btn">SAVE UNPAID SALE</button>' +
                                         '</td>' +
                                         '</tr>';
                                     '</tfoot>' +
@@ -430,6 +432,15 @@
             var customerId = $('.customer-select').val();
 
             window.location.href = "sale-product?customer_id=" + (customerId || "") +
+                "&_token={{ csrf_token() }}";
+        });
+    </script>
+    <script>
+        $('#cart-container').on('click', '.unpaid-btn', function(e) {
+            e.preventDefault();
+            var customerId = $('.customer-select').val();
+
+            window.location.href = "save-unpaid-product?customer_id=" + (customerId || "") +
                 "&_token={{ csrf_token() }}";
         });
     </script>
