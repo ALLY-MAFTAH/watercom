@@ -177,7 +177,7 @@ class SaleController extends Controller
     public function getCartData()
     {
         $cart = session()->get('cart', []);
-        $customers = Customer::all();
+        $customers = Customer::orderBy('name', 'ASC')->get();
         return response()->json(['cart' => $cart, 'customers' => $customers]);
     }
 
@@ -235,7 +235,7 @@ class SaleController extends Controller
     }
 
 
-    
+
     public function remove(Request $request)
     {
         if ($request->id) {

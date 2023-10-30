@@ -431,17 +431,35 @@
             e.preventDefault();
             var customerId = $('.customer-select').val();
 
-            window.location.href = "sale-product?customer_id=" + (customerId || "") +
-                "&_token={{ csrf_token() }}";
+            if (customerId) {
+                var confirmMessage = "Are you sure you want to checkout with this customer?";
+            } else {
+                var confirmMessage = "Are you sure you want to checkout without selecting a customer?";
+            }
+
+            if (window.confirm(confirmMessage)) {
+                // User confirmed, proceed with checkout
+                window.location.href = "sale-product?customer_id=" + (customerId || "") +
+                    "&_token={{ csrf_token() }}";
+            }
         });
     </script>
+
     <script>
         $('#cart-container').on('click', '.unpaid-btn', function(e) {
             e.preventDefault();
             var customerId = $('.customer-select').val();
 
-            window.location.href = "save-unpaid-product?customer_id=" + (customerId || "") +
-                "&_token={{ csrf_token() }}";
+            if (customerId) {
+                var confirmMessage = "Are you sure you want to save unpaid transaction for this customer?";
+            } else {
+                var confirmMessage = "Are you sure you want to save unpaid transaction without selecting a customer?";
+            }
+
+            if (window.confirm(confirmMessage)) {
+                window.location.href = "save-unpaid-product?customer_id=" + (customerId || "") +
+                    "&_token={{ csrf_token() }}";
+            }
         });
     </script>
 @endsection
