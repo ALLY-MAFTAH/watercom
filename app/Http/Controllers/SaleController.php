@@ -166,7 +166,7 @@ class SaleController extends Controller
         notify()->success('Sales recorded successfully');
         return Redirect::back();
     }
-  
+
     public function checkCart()
     {
         if (session()->has('cart')) {
@@ -234,11 +234,8 @@ class SaleController extends Controller
         return response()->json(['success' => 'Cart quantity updated', 'newPrice' => $cart[$request->id]["price"], 'total' => number_format($total, 0, '.', ',')], 200);
     }
 
-    /**
-     * Write code on Method
-     *
-     * @return response()
-     */
+
+    
     public function remove(Request $request)
     {
         if ($request->id) {
