@@ -24,4 +24,8 @@ class Customer extends Model
     {
         return  $this->hasMany(Good::class);
     }
+    public function unpaidGoods()
+    {
+        return  $this->hasMany(UnpaidGood::class);
+    }
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('receipt_number')->nullable();
             $table->date('date');
             $table->double('amount_paid');
+            $table->boolean('status');
             $table->timestamps();
             $table->softDeletes();
         });

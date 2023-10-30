@@ -72,6 +72,12 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('remove-from-cart', [SaleController::class, 'remove'])->name('remove.from.cart');
     Route::get('empty-cart', [SaleController::class, 'empty'])->name('empty.cart');
 
+    // SALES ROUTES
+    Route::get('/sales', [SaleController::class, 'allSales'])->name('sales.index');
+    Route::get('/unpaid_sales', [UnpaidSaleController::class, 'allUnpaidSales'])->name('unpaid_sales.index');
+    Route::post('/verify-payment/{unpaidGood}', [UnpaidSaleController::class, 'verifyPayment'])->name('unpaid_sales.verify_payment');
+    Route::delete('/delete-unpaidGood/{unpaidGood}', [UnpaidSaleController::class, 'deleteUnpaidGood'])->name('unpaid_goods.delete');
+
     // CUSTOMERS ROUTES
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
     Route::post('/add-customer', [CustomerController::class, 'postCustomer'])->name('customers.add');
@@ -96,8 +102,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/edit-expense/{expense}', [ExpenseController::class, 'putExpense'])->name('expenses.edit');
     Route::delete('/delete-expense/{expense}', [ExpenseController::class, 'deleteExpense'])->name('expenses.delete');
 
-    // SALES ROUTES
-    Route::get('/sales', [SaleController::class, 'allSales'])->name('sales.index');
 
     // REPORTS ROUTES
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Good extends Model
+class UnpaidGood extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -17,6 +17,7 @@ class Good extends Model
         'seller',
         'amount_paid',
         'date',
+        'status',
 
     ];
 

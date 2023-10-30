@@ -130,6 +130,9 @@
                     <a href="{{ route('sales.index') }}"
                         class="nav_link {{ request()->routeIs('sales.index') || request()->routeIs('sales.show') ? 'active' : '' }}">
                         <i class='bx bx-dollar nav_icon'></i> <span class="nav_name">Sales</span> </a>
+                    <a href="{{ route('unpaid_sales.index') }}"
+                        class="nav_link {{ request()->routeIs('unpaid_sales.index') || request()->routeIs('unpaid_sales.show') ? 'active' : '' }}">
+                        <i class='bx bx-dollar nav_icon'></i> <span class="nav_name">Unpaid Sales</span> </a>
                     <a href="{{ route('customers.index') }}"
                         class="nav_link {{ request()->routeIs('customers.index') || request()->routeIs('customers.show') ? 'active' : '' }}">
                         <i class='fa fa-users fa-lg nav_icon'></i> <span class="nav_name">Customers</span> </a>

@@ -14,7 +14,7 @@ class UnpaidSale extends Model
     protected $fillable = [
         'product_id',
         'stock_id',
-        'good_id',
+        'unpaid_good_id',
         'user_id',
         'seller',
         'name',
@@ -22,6 +22,7 @@ class UnpaidSale extends Model
         'measure',
         'quantity',
         'unit',
+        'unit_price',
         'price',
         'date',
         'type',
