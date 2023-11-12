@@ -78,7 +78,6 @@
                                 style="width: 40px; height: 40px;color:white;border-radius: 50%; overflow: hidden;background: var(--first-color)"></i>
                         </div><a class="dropdown-item" href="#">{{ Auth::user()->name }}</a>
                     </li>
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
                     @if (Auth::user()->role_id == 1)
                         <li><a class="dropdown-item" href="{{ route('settings.index') }}">Settings</a></li>
                         <li><a class="dropdown-item" href="{{ route('logs.index') }}">Activity Logs</a></li>
@@ -235,7 +234,7 @@
     </main>
 
     </div>
-    {{-- <x:notify-messages /> --}}
+    <x:notify-messages />
     @yield('scripts')
     @notifyJs
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
