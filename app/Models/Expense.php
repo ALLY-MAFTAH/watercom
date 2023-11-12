@@ -13,6 +13,7 @@ class Expense extends Model
         'title',
         'description',
         'amount',
+        'date',
         'status',
         'user_id',
 
@@ -22,7 +23,7 @@ class Expense extends Model
         'deleted_at'
     ];
 
-    
+
     public function user()
     {
         return  $this->belongsTo(User::class, 'user_id');

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('description')->nullable;
             $table->double('amount');
+            $table->date('date');
             $table->boolean('status');
             $table->integer('user_id');
             $table->timestamps();

@@ -22,12 +22,24 @@ class ExpenseController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-        $expenses = Expense::latest()->get();
+        $filteredDate = Carbon::now('GMT+3')->toDateString();
+        $filteredDate = $request->get('filteredDate',$filteredDate);
+
+        if ($filteredDate == null) {
+            $filteredDate = "All Days";
+        }
+        if ($filteredDate!="All Days") {
+
+            $expenses=Expense::where("date","=", $filteredDate)->get();
+        }else {
+
+            $expenses = Expense::latest()->get();
+        }
         $stocks = Stock::latest()->get();
 
-        return view('expenses.index', compact('expenses', 'stocks'));
+        return view('expenses.index', compact('expenses', 'stocks','filteredDate'));
     }
 
     public function showExpense(Request $request, Expense $expense)
@@ -98,6 +110,7 @@ class ExpenseController extends Controller
         try {
             $attributes=$request->validate([
                 'title'=> 'required',
+                'date'=> 'required',
                 'amount'=> 'required',
             ]);
             $attributes['user_id']=Auth::user()->id;
@@ -122,6 +135,7 @@ class ExpenseController extends Controller
             $attributes = $request->validate([
                 'title' => 'required',
                 'amount' => 'required',
+                'date' => 'required',
             ]);
             $attributes['description']= $request->input('description')??'';
 

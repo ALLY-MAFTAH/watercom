@@ -17,7 +17,7 @@ class MessagingService
     public function sendMessage($mobile, $body)
     {
 
-        $from = 'NEXTSMS';
+        $from = 'MORNINGSKY';
         $text = $body;
         $to = substr_replace($mobile, "255", 0, 1);
 

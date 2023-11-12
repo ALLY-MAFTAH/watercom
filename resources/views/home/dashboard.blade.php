@@ -30,7 +30,7 @@
                                 <div class="card-body px-3 py-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="color-card">
-                                            <p class="mb-0 color-card-head">Today's Total Sales</p>
+                                            <p class="mb-0 color-card-head">Today's Total Gross Sales</p>
                                             <h2 class="text-white"> {{ number_format($todaysTotalAmount, 0, '.', ',') }} Tsh
                                             </h2>
                                         </div>
@@ -51,39 +51,19 @@
                                 <div class="card-body px-3 py-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="color-card">
-                                            <p class="mb-0 color-card-head">Today's Water Sales</p>
+                                            <p class="mb-0 color-card-head">Today's Total Expenses</p>
                                             <h2 class="text-white">
-                                                {{ number_format($todaysWaterAmount, 0, '.', ',') }} Tsh
+                                                {{ number_format($todayExpensesAmount, 0, '.', ',') }} Tsh
                                             </h2>
                                         </div>
-                                        <i class="card-icon-indicator mdi mdi-water bg-inverse-icon-warning"></i>
+                                        <i class="card-icon-indicator mdi mdi-currency-usd bg-inverse-icon-warning"></i>
                                     </div>
-                                    <h6 class="text-white">
+                                    {{-- <h6 class="text-white">
                                         @if ($todaysLeadingWater != [])
                                             {{ $todaysLeadingWater->name . ' ' . $todaysLeadingWater->volume . ' ' . $todaysLeadingWater->measure }}
                                             is leading
                                     </h6>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-12 pb-2 col-md-6 ">
-                            <div class="card bg-danger">
-                                <div class="card-body px-3 py-3">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="color-card">
-                                            <p class="mb-0 color-card-head">Today's Soda Sales</p>
-                                            <h2 class="text-white"> {{ number_format($todaysSodaAmount, 0, '.', ',') }} Tsh
-                                            </h2>
-                                        </div>
-                                        <i class="card-icon-indicator mdi mdi-cup bg-inverse-icon-danger"></i>
-                                    </div>
-                                    <h6 class="text-white">
-                                        @if ($todaysLeadingSoda != [])
-                                            {{ $todaysLeadingSoda->name . ' ' . $todaysLeadingSoda->volume . ' ' . $todaysLeadingSoda->measure }}
-                                            is leading
-                                    </h6>
-                                    @endif
+                                     @endif --}}
                                 </div>
                             </div>
                         </div>
@@ -92,10 +72,28 @@
                                 <div class="card-body px-3 py-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="color-card">
+                                            <p class="mb-0 color-card-head">Today's Net Sales</p>
+                                            <h2 class="text-white">
+                                                {{ number_format($todaysTotalAmount - $todayExpensesAmount, 0, '.', ',') }}
+                                                Tsh
+                                            </h2>
+                                        </div>
+                                        <i class="card-icon-indicator mdi mdi-currency-usd bg-inverse-icon-primary"></i>
+                                    </div>
+                                    <h6 class="text-white">Gross Sales - Total Expenses
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-12 pb-2 col-md-6 ">
+                            <div class="card bg-danger">
+                                <div class="card-body px-3 py-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="color-card">
                                             <p class="mb-0 color-card-head">Available Stock Worth</p>
                                             <h2 class="text-white">Tsh {{ number_format($stockAmount, 0, '.', ',') }}</h2>
                                         </div>
-                                        <i class="card-icon-indicator mdi mdi-basket bg-inverse-icon-primary"></i>
+                                        <i class="card-icon-indicator mdi mdi-basket bg-inverse-icon-danger"></i>
                                     </div>
                                     <h6 class="text-white">Today
                                         {{ Illuminate\Support\Carbon::parse(now())->format('d M, Y') }}</h6>
@@ -112,8 +110,7 @@
                                     <h5>Sales Statistics</h5>
                                     <p class="text-muted"> Show overview {{ date('M, Y') }}. <a
                                             class="text-primary btn-icon-text font-weight-medium pl-2"
-                                            style="text-decoration:none" href="{{ route('sales.index') }}">See
-                                            Details</a>
+                                            style="text-decoration:none" href="{{ route('sales.index') }}">See in Details</a>
                                     </p>
                                 </div>
                                 <div class="col-sm-5 text-right">

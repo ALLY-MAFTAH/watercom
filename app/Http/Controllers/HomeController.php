@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Expense;
 use App\Models\Good;
 use App\Models\Sale;
 use App\Models\Stock;
@@ -41,6 +42,8 @@ class HomeController extends Controller
         $thisWeekProfit = 0;
         $thisMonthSalesAmount = 0;
         $thisMonthProfit = 0;
+        $todayDate = Carbon::now('GMT+3')->toDateString();
+
 
         try {
             // TOTAL
@@ -55,7 +58,10 @@ class HomeController extends Controller
             $stockAmount = $stocks->sum(function ($stock) {
                 return $stock->product->price * $stock->quantity;
             });
-            $salesRevenue = Sale::whereYear('date', date('Y'))->sum('price');
+            $salesRevenue = Good::whereYear('date', date('Y'))->sum('amount_paid');
+
+            $todayExpensesAmount=Expense::where("date","=", $todayDate)->sum('amount');
+            // dd($todayExpensesAmount);
 
             // WATER BASED
             $todaysSodaAmount = Sale::where('type', "Soda")->where(['date' => date('Y-m-d')])->sum('price');
@@ -116,6 +122,7 @@ class HomeController extends Controller
             'todaysLeadingProduct',
             'todaysTopSales',
             'salesRevenue',
+            'todayExpensesAmount',
         ));
     }
 }

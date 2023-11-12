@@ -172,7 +172,7 @@
                         <h5>Total</h5>
                     </td>
 
-                    <td class="text-right">
+                    <td class="text-end">
                         <h5>{{ number_format($total, 0, '.', ',') }} Tsh</h5>
                     </td>
                 </tr>

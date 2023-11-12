@@ -87,7 +87,7 @@ class SaleController extends Controller
                     'name' => $product->name,
                     'type' => $product->type,
                     'volume' => $product->volume,
-                    'measure' => $product->measure,
+                    'measure' => $product->measure, 
                     'price' => $cart['price'] * $quantity,
                     'quantity' => $quantity,
                     'unit' => $product->unit,

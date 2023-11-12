@@ -7,31 +7,48 @@
 @section('content')
     <div class="card">
         <div class=" card-header">
-            <div class="row">
-                <div class="col">
-                    <div class="text-left">
-                        <h5 class="my-0">
-                            <span class="">
-                                <b>{{ __('EXPENDITURES') . ' - ' }}
-                                </b>
-                                <div class="btn btn-icon round"
-                                    style="height: 32px;width:32px;cursor: auto;padding: 0;font-size: 15px;line-height:2rem; border-radius:50%;background-color:rgb(229, 207, 242);color:var(--first-color)">
-                                    {{ $expenses->count() }}
-                                </div>
-                            </span>
-                        </h5>
+            <form action="{{ route('expenses.index') }}" method="GET" id="filter-form">
+                <div class="row">
+                    @csrf
+                    <div class="col">
+                        <div class="text-left">
+                            <h5 class="my-0">
+                                <span class="">
+                                    <b>{{ __('EXPENDITURES') . ' - ' }}
+                                    </b>
+                                    <div class="btn btn-icon round"
+                                        style="height: 32px;width:32px;cursor: auto;padding: 0;font-size: 15px;line-height:2rem; border-radius:50%;background-color:rgb(229, 207, 242);color:var(--first-color)">
+                                        {{ $expenses->count() }}
+                                    </div>
+                                </span>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="col text-right">
+                        <a href="#" class="btn btn-sm btn-outline-primary collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false"
+                            aria-controls="collapseTwo">
+
+                            <i class="feather icon-plus"></i> Add Expense
+
+                        </a>
+                    </div>
+                    <div class="col text-center">
+                        <div class="input-group">
+                            <label for="filteredDate" class=" col-form-label">Filter By Date: </label>
+                            <input id="filteredDate" type="date" style="border-radius:0.375rem;"
+                                class="form-control mx-1 @error('filteredDate') is-invalid @enderror" name="filteredDate"
+                                value="{{ $filteredDate }}" required onchange="this.form.submit()">
+                            @error('filteredDate')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
                     </div>
                 </div>
-                <div class="col text-right">
-                    <a href="#" class="btn btn-sm btn-outline-primary collapsed" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false"
-                        aria-controls="collapseTwo">
-
-                        <i class="feather icon-plus"></i> Add Expense
-
-                    </a>
-                </div>
-            </div>
+            </form>
         </div>
         <div class="card-body">
             <div id="collapseTwo" style="width: 100%;border-width:0px" class="accordion-collapse collapse"
@@ -42,7 +59,7 @@
                             @csrf
                             <div class="row">
 
-                                <div class="col-sm-4 mb-1">
+                                <div class="col-sm-3 mb-1">
                                     <label for="title" class=" col-form-label text-sm-start">{{ __('Title') }}</label>
                                     <div class="">
                                         <input id="title" type="text" placeholder="Title"
@@ -55,7 +72,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-sm-4 mb-1">
+                                <div class="col-sm-3 mb-1">
                                     <label for="description"
                                         class=" col-form-label text-sm-start">{{ __('Description') }}</label>
                                     <div class="">
@@ -71,7 +88,21 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-4 mb-1">
+                                <div class="col-sm-3 mb-1">
+                                    <label for="date"
+                                        class=" col-form-label text-sm-start">{{ __('Expense Date') }}</label>
+                                    <div class="">
+                                        <input id="date" type="date"
+                                            class="form-control @error('date') is-invalid @enderror" name="date"
+                                            value="{{ old('date') }}" required autocomplete="date" autofocus>
+                                        @error('date')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 mb-1">
                                     <label for="amount" class=" col-form-label text-sm-start">{{ __('Amount') }}</label>
                                     <div class="">
                                         <input id="amount" type="number" placeholder="00"
@@ -98,30 +129,38 @@
                 </div>
             </div>
             <table id="data-tebo1"
-                class="dt-responsive nowrap table shadow rounded-3 table-responsive-sm  table-striped table-hover"
+                class="dt-responsive  table shadow rounded-3 table-responsive-sm  table-striped table-hover"
                 style="width: 100%">
                 <thead class="shadow rounded-3">
                     <th style="max-width: 20px">#</th>
                     <th>Title</th>
                     <th>Description</th>
-                    <th>Amount</th>
+                    <th class="text-end">Amount</th>
+                    <th class="text-center">Expense Date</th>
                     <th>Issued by</th>
-                    <th>Created At</th>
+                    {{-- <th>Created At</th> --}}
                     {{-- <th style="max-width: 50px">Status</th> --}}
-                    <th></th>
                     <th></th>
                     <th></th>
 
                 </thead>
                 <tbody>
+                    @php
+                    $totalAmount = 0;
+                @endphp
                     @foreach ($expenses as $index => $expense)
                         <tr>
                             <td>{{ ++$index }}</td>
-                            <td>{{ $expense->title }}</td>
-                            <td>{{ $expense->description }}</td>
-                            <td>{{ $expense->amount }}</td>
+                            <td style="max-width: 150px">{{ $expense->title }}</td>
+                            <td style="max-width: 250px">{{ $expense->description }}</td>
+                            <td class="text-end">{{ number_format($expense->amount, 0, '.', ',') . ' TZS' }}</td>
+                            @php
+                                $totalAmount += $expense->amount;
+                            @endphp
+                            <td class="text-center">
+                                {{ Illuminate\Support\Carbon::parse($expense->date)->format('d M, Y') }}</td>
                             <td> {{ $expense->user->name }} </td>
-                            <td class="">{{ $expense->updated_at->format('D, d M Y \a\t H:i:s') }} </td>
+                            {{-- <td class="">{{ $expense->updated_at->format('D, d M Y \a\t H:i:s') }} </td> --}}
                             {{-- <td class="text-center">
                                 <form id="toggle-status-form-{{ $expense->id }}" method="POST"
                                     action="{{ route('expenses.toggle-status', $expense) }}">
@@ -136,12 +175,12 @@
                                     @method('PUT')
                                 </form>
                             </td> --}}
-                            <td>
+                            {{-- <td>
                                 <a href="{{ route('expenses.show', $expense) }}"
                                     class="btn btn-sm btn-outline-info collapsed" type="button">
                                     <i class="feather icon-edit"></i> View
                                 </a>
-                            </td>
+                            </td> --}}
                             <td class="text-center">
                                 <a href="#" class="btn btn-sm btn-outline-primary collapsed" type="button"
                                     data-bs-toggle="modal" data-bs-target="#editModal-{{ $expense->id }}"
@@ -182,8 +221,21 @@
                                                             class="form-control @error('description') is-invalid @enderror"
                                                             name="description"
                                                             value="{{ old('description', $expense->description) }}"
-                                                             autocomplete="description" autofocus>
+                                                            autocomplete="description" autofocus>
                                                         @error('description')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="text-start mb-1">
+                                                        <label for="date"
+                                                            class="col-form-label text-sm-start">{{ __('Date') }}</label>
+                                                        <input id="date" type="date"
+                                                            class="form-control @error('date') is-invalid @enderror"
+                                                            name="date" value="{{ old('date', $expense->date) }}"
+                                                            required autocomplete="date" autofocus>
+                                                        @error('date')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
@@ -227,6 +279,15 @@
                         </tr>
                     @endforeach
                 </tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td style="font-size: 18px;font-weight:bold">Total</td>
+                        <td style="font-size: 18px;font-weight:bold" class="text-end">
+                            {{ number_format($totalAmount, 0, '.', ',') }} TZS</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
             </table>
         </div>
     </div>
