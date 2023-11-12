@@ -259,7 +259,7 @@
                                         '<td colspan="2"></td>' +
                                         '<td  class="text-center">' +
                                         '<select class="form-control customer-select">' +
-                                        '<option value=""> --  -- Select Customer --  -- </option>';
+                                        '<option value=""> -- Select Customer -- </option>';
                                     $.each(cartData.customers, function(index,
                                         value) {
                                         newTable += '<option value="' +
