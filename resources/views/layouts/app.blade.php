@@ -73,7 +73,7 @@
                     <a href="#" class="btn btn-sm btn-warning collapsed" type="button" data-bs-toggle="collapse"
                         data-bs-target="#cartCollapse" aria-expanded="false" aria-controls="cartCollapse">
 
-                        <i class="fa fa-shopping-cart shadow" aria-hidden="true"></i> Cart <span
+                        <i class="fa fa-shopping-cart shadow" aria-hidden="true"></i> Special Cart <span
                             class="badge badge-pill badge-danger">
                             <div class="btn btn-icon round "
                                 style="height: 23px;width:23px;margin:0;padding: 0;font-size: 12px;line-height:1.3rem; border-radius:50%;background-color:green;color:white">

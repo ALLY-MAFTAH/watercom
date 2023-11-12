@@ -58,7 +58,7 @@
     <div class="accordion-body">
         <div class="card">
             <div class="card-header text-center" style="color: var(--first-color);font-weight:bold;font-size:20px">
-                Cart - <span class="cart-count"
+                Special Cart - <span class="cart-count"
                     style="background: rgb(206, 197, 237); border-radius:5px;padding-left:5px;padding-right:5px;">{{ count((array) session('special_cart')) }}
                     Products</span>
             </div>

@@ -161,7 +161,7 @@
                             '<td colspan="2"></td>' +
                             '<td  class="text-center">' +
                             '<select class="form-control customer-select">' +
-                            '<option value="">Select Customer</option>';
+                            '<option value=""> -- Select Customer -- </option>';
                         $.each(cartData.customers, function(index, value) {
                             newTable += '<option value="' + value.id + '">' + value.name +
                                 '</option>';
@@ -174,7 +174,7 @@
                             '<td colspan="5" class="text-center ">' +
                             '<a href="{{ route('empty.special_cart') }}" class="btn btn-danger btn-sm my-2 mx-2"><i class=""></i>Empty Cart</a>' +
                             '<button class="btn btn-sm my-2 mx-2 btn-success checkout-btn">RECORD PAID SALE</button>' +
-                            '<button class="btn btn-sm my-2 mx-2 btn-warning unpaid-btn">SAVE UNPAID SALE</button>' +
+                            // '<button class="btn btn-sm my-2 mx-2 btn-warning unpaid-btn">SAVE UNPAID SALE</button>' +
                             '</td>' +
                             '</tr>';
                         '</tfoot>' +
@@ -259,7 +259,7 @@
                                         '<td colspan="2"></td>' +
                                         '<td  class="text-center">' +
                                         '<select class="form-control customer-select">' +
-                                        '<option value="">Select Customer</option>';
+                                        '<option value=""> --  -- Select Customer --  -- </option>';
                                     $.each(cartData.customers, function(index,
                                         value) {
                                         newTable += '<option value="' +
@@ -274,7 +274,7 @@
                                         '<td colspan="5" class="text-center ">' +
                                         '<a href="{{ route('empty.special_cart') }}" class="btn btn-danger btn-sm my-2 mx-2"><i class=""></i>Empty Cart</a>' +
                                         '<button class="btn btn-sm my-2 mx-2 btn-success checkout-btn">RECORD PAID SALE</button>' +
-                                        '<button class="btn btn-sm my-2 mx-2 btn-warning unpaid-btn">SAVE UNPAID SALE</button>' +
+                                        // '<button class="btn btn-sm my-2 mx-2 btn-warning unpaid-btn">SAVE UNPAID SALE</button>' +
                                         '</td>' +
                                         '</tr>';
                                     '</tfoot>' +
