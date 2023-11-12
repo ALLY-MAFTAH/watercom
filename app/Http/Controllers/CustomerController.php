@@ -92,7 +92,7 @@ class CustomerController extends Controller
     {
 
         $attributes = $request->validate([
-            'status' => ['required', 'boolean'],
+            'is_special' => ['required', 'boolean'],
         ]);
 
         $customer->update($attributes);

@@ -12,7 +12,7 @@
                     <div class=" text-left">
                         <h5 class="my-0">
                             <span class="">
-                                <b>{{ __('CUSTOMERS') .' - '}}
+                                <b>{{ __('CUSTOMERS') . ' - ' }}
                                 </b>
                                 <div class="btn btn-icon round"
                                     style="height: 32px;width:32px;cursor: auto;padding: 0;font-size: 15px;line-height:2rem; border-radius:50%;background-color:rgb(229, 207, 242);color:var(--first-color)">
@@ -23,8 +23,9 @@
                     </div>
                 </div>
                 <div class="col text-right">
-                    <a href="#" class="btn btn-sm btn-outline-primary collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    <a href="#" class="btn btn-sm btn-outline-primary collapsed" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false"
+                        aria-controls="collapseTwo">
                         <i class="feather icon-plus"></i> Add Customer
                     </a>
                 </div>
@@ -39,7 +40,8 @@
                             @csrf
                             <div class="row">
                                 <div class="col-sm-6 mb-1">
-                                    <label for="name" class=" col-form-label text-sm-start">{{ __('Full Name') }}</label>
+                                    <label for="name"
+                                        class=" col-form-label text-sm-start">{{ __('Full Name') }}</label>
                                     <div class="">
                                         <input id="name" type="text" placeholder=""
                                             class="form-control @error('name') is-invalid @enderror" name="name"
@@ -55,7 +57,8 @@
                                     <label for="phone"
                                         class=" col-form-label text-sm-start">{{ __('Mobile Number') }}</label>
                                     <div class="">
-                                        <input id="phone" type="tel" placeholder="Eg; 0712345678" pattern="0[0-9]{9}" maxlength="10"
+                                        <input id="phone" type="tel" placeholder="Eg; 0712345678"
+                                            pattern="0[0-9]{9}" maxlength="10"
                                             class="form-control @error('phone') is-invalid @enderror" name="phone"
                                             value="{{ old('phone') }}" required autocomplete="phone" autofocus>
                                         @error('phone')
@@ -86,6 +89,7 @@
                     <th>Full Name</th>
                     <th>Mobile Number</th>
                     <th>Number of Purchases</th>
+                    <th class="text-center">Is Special</th>
                     <th class="text-center">Actions</th>
 
                 </thead>
@@ -100,18 +104,19 @@
                                 <form id="toggle-status-form-{{ $customer->id }}" method="POST" class="px-2"
                                     action="{{ route('customers.toggle-status', $customer) }}">
                                     <div class="form-check form-switch ">
-                                        <input type="hidden" name="status" value="0">
-                                        <input type="checkbox" name="status" id="status-switch-{{ $customer->id }}"
-                                            class="form-check-input " @if ($customer->status) checked @endif
+                                        <input type="hidden" name="is_special" value="0">
+                                        <input type="checkbox" name="is_special" id="status-switch-{{ $customer->id }}"
+                                            class="form-check-input " @if ($customer->is_special) checked @endif
                                             @if ($customer->trashed()) disabled @endif value="1"
                                             onclick="this.form.submit()" />
                                     </div>
                                     @csrf
                                     @method('PUT')
                                 </form>
-
-                                <a href="{{ route('customers.show', $customer) }}" class="btn btn-sm btn-outline-info collapsed mx-1"
-                                    type="button">
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ route('customers.show', $customer) }}"
+                                    class="btn btn-sm btn-outline-info collapsed mx-1" type="button">
                                     <i class="feather icon-edit"></i> View
                                 </a>
                                 <a href="#" class="btn btn-sm btn-outline-primary collapsed mx-1" type="button"
@@ -148,7 +153,8 @@
                                                     <div class="text-start mb-1">
                                                         <label for="phone"
                                                             class="col-form-label text-sm-start">{{ __('Mobile Number') }}</label>
-                                                        <input id="phone" type="text" placeholder="Eg; 0712345678" pattern="0[0-9]{9}" maxlength="10"
+                                                        <input id="phone" type="text" placeholder="Eg; 0712345678"
+                                                            pattern="0[0-9]{9}" maxlength="10"
                                                             class="form-control @error('phone', $customer->phone) is-invalid @enderror"
                                                             name="phone" value="{{ old('phone', $customer->phone) }}"
                                                             required autocomplete="phone" autofocus>

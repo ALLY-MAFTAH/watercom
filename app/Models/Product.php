@@ -18,6 +18,7 @@ class Product extends Model
         'volume',
         'unit',
         'price',
+        'special_price',
         'measure',
         'has_discount',
         'status',

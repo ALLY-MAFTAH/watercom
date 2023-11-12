@@ -31,6 +31,7 @@ class StockController extends Controller
     }
     public function postStock(Request $request)
     {
+        // dd($request->all());
         try {
             $attributes = $request->validate([
                 'name' => 'required',
@@ -46,11 +47,11 @@ class StockController extends Controller
             $stock = Stock::create($attributes);
             ActivityLogHelper::addToLog(Auth::user()->name . ' Added ' . $stock->name . ' to stock ');
         } catch (QueryException $th) {
-            // dd($th);
+            dd($th);
             notify()->error('Failed to add "' . $request->volume . ' ' . $request->measure . '-' . $request->name . '" to stock. It already exists.');
             return back();
         }
-        $request->request->add(['price' => $request->price, 'stock_id' => $stock->id]); //add request
+        $request->request->add(['price' => $request->price,'special_price' => $request->special_price, 'stock_id' => $stock->id]); //add request
 
         $product = new ProductController();
         $product->postProduct($request);

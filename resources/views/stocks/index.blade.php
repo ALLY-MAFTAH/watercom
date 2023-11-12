@@ -41,7 +41,7 @@
                         <form method="POST" action="{{ route('stocks.add') }}">
                             @csrf
                             <div class="row">
-                                <div class="col-lg-3 mb-1">
+                                <div class="col-lg-4 mb-1">
                                     <label for="name" class=" col-form-label text-sm-start">{{ __('Name') }}</label>
                                     <div class="input-group">
                                         <input id="name" type="text" placeholder=""
@@ -61,7 +61,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-lg-3 mb-1">
+                                <div class="col-lg-4 mb-1">
                                     <label for="volume" class=" col-form-label text-sm-start">{{ __('Volume') }}</label>
                                     <div class="input-group">
                                         <input id="volume" type="number" step="any" placeholder="00"
@@ -81,7 +81,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-lg-2 mb-1">
+                                <div class="col-lg-4 mb-1">
                                     <label for="quantity" class=" col-form-label text-sm-start">{{ __('Quantity') }}</label>
                                     <div class="input-group">
                                         <input id="quantity" type="number" step="any" placeholder="00"
@@ -101,7 +101,9 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-lg-2 mb-1">
+                                </div>
+                                <div class="row">
+                                <div class="col-lg-4 mb-1">
                                     <label for="cost"
                                         class=" col-form-label text-sm-start">{{ __('Buying Price') }}</label>
                                     <div class="">
@@ -115,7 +117,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-lg-2 mb-1">
+                                <div class="col-lg-4 mb-1">
                                     <label for="price"
                                         class=" col-form-label text-sm-start">{{ __('Selling Price') }}</label>
                                     <div class="">
@@ -128,6 +130,21 @@
                                             </span>
                                         @enderror
                                     </div>
+                                </div>
+                                <div class="col-lg-4 mb-1">
+                                    <label for="special_price"
+                                        class=" col-form-label text-sm-start">{{ __('Special Selling Price') }}</label>
+                                    <div class="">
+                                        <input id="special_price" type="number" step="any" placeholder="Tsh"
+                                            class="form-control @error('special_price') is-invalid @enderror" name="special_price"
+                                            value="0"required autocomplete="price" autofocus>
+                                        @error('special_price')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
                                 </div>
                             </div>
                             <div class="row mb-1 mt-2">
@@ -148,13 +165,14 @@
                 <thead class="shadow rounded-3">
                     <th style="max-width: 20px">#</th>
                     <th>Name</th>
-                    <th>Type</th>
+                    {{-- <th>Type</th> --}}
                     <th>Volume</th>
                     <th>Quantity</th>
                     @if (Auth::user()->role_id == 1)
                         <th class="text-right">Buying Price</th>
                     @endif
                     <th class="text-right">Selling Price</th>
+                    <th class="text-right">Special Price</th>
                     <th>Last Updated</th>
                     @if (Auth::user()->role_id == 1)
                         <th class="text-center">Discount</th>
@@ -171,17 +189,18 @@
                         <tr>
                             <td>{{ ++$index }}</td>
                             <td>{{ $stock->name }}</td>
-                            <td>{{ $stock->type }}</td>
+                            {{-- <td>{{ $stock->type }}</td> --}}
                             <td>{{ $stock->volume }} {{ $stock->measure }}</td>
                             <td>{{ $stock->quantity . ' ' . $stock->unit }}</td>
                             @if (Auth::user()->role_id == 1)
-                                <td class="text-right">{{ number_format($stock->cost, 0, '.', ',') }} Tsh</td>
+                                <td class="text-end">{{ number_format($stock->cost, 0, '.', ',') }} Tsh</td>
                             @endif
                             @php
                                 $totalBuyingPrice = $totalBuyingPrice + $stock->cost * $stock->quantity;
                                 $totalSellingPrice = $totalSellingPrice + $stock->product->price * $stock->quantity;
                             @endphp
-                            <td class="text-right">{{ number_format($stock->product->price, 0, '.', ',') }} Tsh</td>
+                            <td class="text-end">{{ number_format($stock->product->price, 0, '.', ',') }} Tsh</td>
+                            <td class="text-end">{{ number_format($stock->product->special_price, 0, '.', ',') }} Tsh</td>
                             <td class="">{{ $stock->updated_at->format('D, d M Y \a\t H:i:s') }} </td>
                             @if (Auth::user()->role_id == 1)
                                 <td class="text-center">
@@ -215,10 +234,10 @@
                                 </td>
                             @endif
                             <td class="text-center">
-                                <a href="{{ route('stocks.show', $stock) }}"
+                                {{-- <a href="{{ route('stocks.show', $stock) }}"
                                     class="btn btn-sm btn-outline-info collapsed mx-2" type="button">
                                     <i class="feather icon-edit"></i> View
-                                </a>
+                                </a> --}}
                                 @if (Auth::user()->role_id == 1)
                                     <a href="#" class="btn btn-sm btn-outline-primary collapsed mx-2"
                                         type="button" data-bs-toggle="modal"
@@ -226,8 +245,6 @@
                                         aria-controls="collapseTwo">
                                         <i class="feather icon-edit"></i> Edit
                                     </a>
-
-
                                     <a href="#" class="btn btn-sm btn-outline-danger mx-2"
                                         onclick="if(confirm('Are you sure want to delete {{ $stock->name }}?')) document.getElementById('delete-stock-{{ $stock->id }}').submit()">
                                         <i class="f"></i>Delete
@@ -236,7 +253,7 @@
                                         action="{{ route('stocks.delete', $stock) }}">@csrf @method('delete')
                                     </form>
                                 @endif
-                                <div class="modal modal-sm fade" id="editModal-{{ $stock->id }}" tabindex="-1"
+                                <div class="modal modal-md fade" id="editModal-{{ $stock->id }}"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -358,6 +375,20 @@
                                                             </span>
                                                         @enderror
                                                     </div>
+                                                    <div class="text-start mb-1">
+                                                        <label for="special_price"
+                                                            class="col-form-label text-sm-start">{{ __('Special Selling Price') }}</label>
+                                                        <input id="special_price" type="number" placeholder="Tsh"
+                                                            class="form-control @error('special_price') is-invalid @enderror"
+                                                            name="special_price"
+                                                            value="{{ old('special_price', $stock->product->special_price) }}"
+                                                            required autocomplete="price" autofocus>
+                                                        @error('special_price')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
                                                     <div class="row mb-1 mt-2">
                                                         <div class="text-center">
                                                             <button type="submit" class="btn btn-sm btn-primary">
@@ -376,7 +407,7 @@
                     @endforeach
                 </tbody>
                 <tr>
-                    <td colspan="4"></td>
+                    <td colspan="3"></td>
                     <td>
                         <h5>Total</h5>
                     </td>

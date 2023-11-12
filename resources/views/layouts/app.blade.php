@@ -67,6 +67,23 @@
                     </a>
                 </div>
             @endif
+            @if (request()->routeIs('carts.special_index'))
+                <div class="cart-dropdown">
+
+                    <a href="#" class="btn btn-sm btn-warning collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#cartCollapse" aria-expanded="false" aria-controls="cartCollapse">
+
+                        <i class="fa fa-shopping-cart shadow" aria-hidden="true"></i> Cart <span
+                            class="badge badge-pill badge-danger">
+                            <div class="btn btn-icon round "
+                                style="height: 23px;width:23px;margin:0;padding: 0;font-size: 12px;line-height:1.3rem; border-radius:50%;background-color:green;color:white">
+                                {{ count((array) session('special_cart')) }}
+                            </div>
+                        </span>
+
+                    </a>
+                </div>
+            @endif
             <div class="dropdown prof">
                 <a href="#"class="dropdown-toggle" style="text-decoration: none; color:var(--first-color)"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -126,6 +143,10 @@
                         class="nav_link {{ request()->routeIs('carts.index') ? 'active' : '' }}">
                         <i class='bx bx-cart nav_icon'></i> <span class="nav_name">Selling Cart</span>
                     </a>
+                    <a href="{{ route('carts.special_index') }}"
+                        class="nav_link {{ request()->routeIs('carts.special_index') ? 'active' : '' }}">
+                        <i class='bx bx-cart nav_icon' style="color: red"></i> <span class="nav_name" >Special Cart</span>
+                    </a>
                     <a href="{{ route('sales.index') }}"
                         class="nav_link {{ request()->routeIs('sales.index') || request()->routeIs('sales.show') ? 'active' : '' }}">
                         <i class='bx bx-dollar nav_icon'></i> <span class="nav_name">Sales</span> </a>
@@ -143,10 +164,10 @@
                             class="nav_link {{ request()->routeIs('users.index') || request()->routeIs('users.show') ? 'active' : '' }}">
                             <i class='bx bx-group nav_icon'></i> <span class="nav_name">Users</span>
                         </a>
-                        <a href="{{ route('roles.index') }}"
+                        {{-- <a href="{{ route('roles.index') }}"
                             class="nav_link {{ request()->routeIs('roles.index') || request()->routeIs('roles.show') ? 'active' : '' }}">
                             <i class='bx bx-registered nav_icon'></i> <span class="nav_name">Roles</span>
-                        </a>
+                        </a> --}}
                     @endif
                     <a href="{{ route('reports.index') }}"
                         class="nav_link {{ request()->routeIs('reports.index') ? 'active' : '' }}"> <i
@@ -234,7 +255,7 @@
     </main>
 
     </div>
-    <x:notify-messages />
+    {{-- <x:notify-messages /> --}}
     @yield('scripts')
     @notifyJs
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])

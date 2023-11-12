@@ -50,6 +50,7 @@ class ProductController extends Controller
                 'volume' => 'required',
                 'measure' => 'required',
                 'price' => 'required',
+                'special_price' => 'required',
                 'type' => 'required',
             ]);
 
@@ -79,6 +80,7 @@ class ProductController extends Controller
                 'unit' => 'required',
                 'measure' => 'required',
                 'price' => 'required',
+                'special_price' => 'required',
                 'type' => 'required',
             ]);
 

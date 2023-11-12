@@ -72,6 +72,17 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('remove-from-cart', [SaleController::class, 'remove'])->name('remove.from.cart');
     Route::get('empty-cart', [SaleController::class, 'empty'])->name('empty.cart');
 
+    // SPECIAL CART
+    Route::get('/special_sale-product', [SpecialSaleController::class, 'specialSaleProduct'])->name('products.special_sale');
+    Route::get('/special_save-unpaid-product', [UnpaidSpecialSaleController::class, 'specialSaveUnpaidProduct'])->name('products.special_save_unpaid');
+    Route::get('/special_carts', [SpecialSaleController::class, 'specialIndex'])->name('carts.special_index');
+    Route::get('get-special_cart-data', [SpecialSaleController::class, 'specialGetCartData'])->name('special_cart');
+    Route::get('check-special_cart', [SpecialSaleController::class, 'specialCheckCart'])->name('special_cart');
+    Route::post('add-to-special_cart/{id}', [SpecialSaleController::class, 'specialAddToCart'])->name('add.to.special_cart');
+    Route::patch('update-special_cart', [SpecialSaleController::class, 'specialUpdate'])->name('update.special_cart');
+    Route::delete('remove-from-special_cart', [SpecialSaleController::class, 'specialRemove'])->name('remove.from.special_cart');
+    Route::get('empty-special_cart', [SpecialSaleController::class, 'specialEmpty'])->name('empty.special_cart');
+
     // SALES ROUTES
     Route::get('/sales', [SaleController::class, 'allSales'])->name('sales.index');
     Route::get('/unpaid_sales', [UnpaidSaleController::class, 'allUnpaidSales'])->name('unpaid_sales.index');
