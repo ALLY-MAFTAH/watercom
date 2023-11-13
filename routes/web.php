@@ -88,6 +88,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/unpaid_sales', [UnpaidSaleController::class, 'allUnpaidSales'])->name('unpaid_sales.index');
     Route::post('/verify-payment/{unpaidGood}', [UnpaidSaleController::class, 'verifyPayment'])->name('unpaid_sales.verify_payment');
     Route::delete('/delete-unpaidGood/{unpaidGood}', [UnpaidSaleController::class, 'deleteUnpaidGood'])->name('unpaid_goods.delete');
+    Route::delete('/discard-unpaidGood/{unpaidGood}', [UnpaidSaleController::class, 'discardUnpaidGood'])->name('unpaid_goods.discard');
 
     // CUSTOMERS ROUTES
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');

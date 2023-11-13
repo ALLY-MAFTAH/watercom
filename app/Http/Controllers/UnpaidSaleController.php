@@ -325,6 +325,34 @@ class UnpaidSaleController extends Controller
 
 
 
+    public function discardUnpaidGood(UnpaidGood $unpaidGood)
+    {
+        // dd($unpaidGood->id);
+        $carts = $unpaidGood->unpaidPurchases;
+
+        try {
+            foreach ($carts as $cart) {
+                $product = Product::findOrFail($cart['product_id']);
+                $stock = Stock::findOrFail($product->stock_id);
+            $returnedQuantity = $cart['quantity'];
+                    $newStockQty = $stock->quantity + $returnedQuantity;
+                    $stock->update([
+                        'quantity' => $newStockQty,
+                    ]);
+                    $stock->save();
+                    $itsName = $unpaidGood->id;
+                    $unpaidGood->delete();
+                }
+            ActivityLogHelper::addToLog('Discarded unpaid transaction ' . $itsName);
+
+            notify()->success('You have successful deleted unpaid transaction.');
+            return back();
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+            notify()->success('You have successful deleted unpaid transaction.');
+            return back();
+        }
+    }
     public function deleteUnpaidGood(UnpaidGood $unpaidGood)
     {
         // dd($unpaidGood->id);

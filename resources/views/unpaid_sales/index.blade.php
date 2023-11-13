@@ -23,7 +23,7 @@
             @php
                 $totalAmount = 0;
             @endphp
-            <table id="data-tebo2" class=" dt-responsive nowrap table shadow rounded-3 table-responsive table-striped">
+            <table id="data-tebo2" class=" dt-responsive  table shadow rounded-3 table-responsive table-striped">
                 <thead class="shadow rounded-3">
                     <th>#</th>
                     <th>Date</th>
@@ -32,20 +32,20 @@
                     <th>Customer</th>
                     <th>Seller</th>
                     <th class="text-center">Status</th>
-                    <th class="text-center">Action</th>
+                    <th class="text-center"></th>
+                    <th class="text-center"></th>
                 </thead>
                 <tbody>
                     @php
                         $total = 0;
                     @endphp
                     @foreach ($boughtUnpaidGoods as $index => $unpaidGood)
-
                         <tr>
                             <form id="ver_pay_form-{{ $unpaidGood->id }}"
                                 action="{{ route('unpaid_sales.verify_payment', $unpaidGood) }}" method="post">
                                 @csrf
                                 <td>{{ ++$index }}</td>
-                                <td>{{ Illuminate\Support\Carbon::parse($unpaidGood->created_at)->format('D, d M Y \a\t H:i:s') }}
+                                <td style="max-width: 100px">{{ Illuminate\Support\Carbon::parse($unpaidGood->created_at)->format('D, d M Y \a\t H:i:s') }}
                                 </td>
                                 <td>
                                     @foreach ($unpaidGood->unpaidPurchases as $purchase)
@@ -71,7 +71,7 @@
                                 @php
                                     $total = $total + $unpaidGood->amount_paid;
                                 @endphp
-                                <td class="text-right">{{ number_format($unpaidGood->amount_paid, 0, '.', ',') }} Tsh</td>
+                                <td class="text-end">{{ number_format($unpaidGood->amount_paid, 0, '.', ',') }} Tsh</td>
                                 @php
                                     $customer = App\Models\Customer::find($unpaidGood->customer_id);
                                 @endphp
@@ -85,28 +85,39 @@
                                 </td>
                                 <td>{{ $unpaidGood->seller }}</td>
                             </form>
-                                <td class="text-center">
-                                    @if ($unpaidGood->status == 1)
-                                        <span class="text-success" style="font-weight: bold"> PAID</span>
-                                    @else
-                                        <span class="text-danger"style="font-weight: bold">NOT PAID</span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
+                            <td class="text-center">
+                                @if ($unpaidGood->status == 1)
+                                    <span class="text-success" style="font-weight: bold"> PAID</span>
+                                @else
+                                    <span class="text-danger"style="font-weight: bold">NOT PAID</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
 
-                                    @if ($unpaidGood->status == 1)
-                                    <a href="#" class="btn btn-sm btn-outline-danger mx-2"
+                                @if ($unpaidGood->status == 1)
+                                    <a href="#" class="mt-2 btn btn-sm btn-outline-danger mx-2"
                                         onclick="if(confirm('Are you sure want to delete?')) document.getElementById('delete-unpaidGood-{{ $unpaidGood->id }}').submit()">
                                         Delete
                                     </a>
                                     <form id="delete-unpaidGood-{{ $unpaidGood->id }}" method="post"
                                         action="{{ route('unpaid_goods.delete', $unpaidGood) }}">@csrf
                                         @method('delete')
-                                        </form>
-                                    @else
-                                        <a href="#"onclick="if(confirm('Are you sure want to verify this transaction as paid?')) document.getElementById('ver_pay_form-{{ $unpaidGood->id }}').submit()" class="mt-2 btn btn-success btn-sm">Verify Payment</button>
-                                    @endif
-                                </td>
+                                    </form>
+                                @else
+                                    <a href="#"onclick="if(confirm('Are you sure want to verify this transaction as paid?')) document.getElementById('ver_pay_form-{{ $unpaidGood->id }}').submit()"
+                                        class="mt-2 btn btn-success btn-sm">Verify Payment</a>
+                                @endif
+                            </td>
+                            <td>
+                                @if ($unpaidGood->status == 0)
+                                    <a href="#"onclick="if(confirm('Are you sure want to discard this transaction?')) document.getElementById('discard-unpaidGood-{{ $unpaidGood->id }}').submit()"
+                                        class="mt-2 btn btn-danger btn-sm">Discard</a>
+                                    <form id="discard-unpaidGood-{{ $unpaidGood->id }}" method="post"
+                                        action="{{ route('unpaid_goods.discard', $unpaidGood) }}">@csrf
+                                        @method('delete')
+                                    </form>
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
