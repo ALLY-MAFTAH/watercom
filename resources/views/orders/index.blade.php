@@ -149,11 +149,11 @@
                                                         <b>This order will be sent to:</b>
                                                         <br>
                                                         <h6 class="text-start ml-2">
-                                                            <b> Admin: </b> &nbsp;&nbsp;{{ setting('Admin Email') }}
+                                                            <b>&nbsp;&nbsp;&nbsp;&nbsp; Admin </b>  &nbsp;&nbsp;{{ setting('Admin Phone') }}
                                                         </h6>
-                                                        <h6 class="text-start ml-2">
+                                                        {{-- <h6 class="text-start ml-2">
                                                             <b> Afya: </b> &nbsp;&nbsp; {{ setting('Afya Email') }}
-                                                        </h6>
+                                                        </h6> --}}
                                                         <div class="text-end px-3">
                                                             @if (Auth::user()->role_id == 1)
                                                                 <a href="{{ route('settings.index') }}"><i

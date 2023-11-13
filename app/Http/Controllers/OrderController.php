@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\MessagingService;
 use Illuminate\Routing\Controller;
 
 use App\Helpers\ActivityLogHelper;
@@ -69,19 +70,40 @@ class OrderController extends Controller
                 $order->items()->save($item);
             }
 
-            $receivers = [
-                setting('Admin Email'),
-                setting('Afya Email'),
-
-            ];
-            foreach ($receivers as $receiver) {
-
-                Mail::send('mails.order', ['order' => $selectedStocks], function ($m) use ($receiver) {
-                    $m->from('amelipaapp@gmail.com', setting('App Name', "Tanga Watercom"));
-
-                    $m->to($receiver)->subject('Please, receive new order.');
-                });
+            // MESSAGE CONTENT
+            $heading  =  "Hello, \n\nTafadhali pokea order ya bidhaa zifuatazo:\n\n";
+            $orderedGoods = [];
+            foreach ($selectedStocks as $key => $orderedGood) {
+                $orderedGoods[] = ++$key . ". " . $orderedGood['name'] . " " . $orderedGood['volume'] . " " . $orderedGood['measure'] . " - " . $orderedGood['quantity'] . " " . $orderedGood['unit'] . "\n\n";
             }
+            // $totalCost = "Zinazogharimu Jumla ya Tsh " . number_format($totalAmount, 0, '.', ',') . ". Ambazo hazijalipwa.\n";
+            $closing  = "Ahsante.";
+            $messageBody = $heading . implode('', $orderedGoods) . $closing;
+
+            $messagingService = new MessagingService();
+                $sendMessageResponse = $messagingService->sendMessage(setting('Admin Phone'), $messageBody);
+
+                if ($sendMessageResponse == "Sent") {
+                    ActivityLogHelper::addToLog('Sent sms to customer. Number: ' . setting('Admin Phone'));
+                    notify()->success('Message successful sent.');
+                } else {
+                    notify()->error('Message not sent, crosscheck your inputs');
+                }
+
+            // $receivers = [
+            //     setting('Admin Email'),
+            //     setting('Admin Phone'),
+            //     setting('Afya Email'),
+
+            // ];
+            // foreach ($receivers as $receiver) {
+
+            //     Mail::send('mails.order', ['order' => $selectedStocks], function ($m) use ($receiver) {
+            //         $m->from('amelipaapp@gmail.com', setting('App Name', "Tanga Watercom"));
+
+            //         $m->to($receiver)->subject('Please, receive new order.');
+            //     });
+            // }
 
             ActivityLogHelper::addToLog('Created order. Number: ' . $order->number);
 
