@@ -218,11 +218,11 @@ class SpecialSaleController extends Controller
             $cart = session()->get('special_cart');
             $cart[$request->id]["quantity"] = $request->quantity;
 
-            if ($cart[$request->id]["quantity"] >= setting('Discount Limit Quantity', 10) && $product->has_discount) {
-                $cart[$request->id]["special_price"] = $product->special_price - setting('Discount Amount', 200);
-            } else {
+            // if ($cart[$request->id]["quantity"] >= setting('Discount Limit Quantity', 10) && $product->has_discount) {
+            //     $cart[$request->id]["special_price"] = $product->special_price - setting('Discount Amount', 200);
+            // } else {
                 $cart[$request->id]["special_price"] =  $product->special_price;
-            }
+            // }
             session()->put('special_cart', $cart);
         }
         $total = 0;
