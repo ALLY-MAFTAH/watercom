@@ -23,7 +23,8 @@ return new class extends Migration
             $table->unique(['stock_id', 'volume']);
             $table->string('measure');
             $table->double('price');
-            $table->boolean('has_discount')->default(0);
+            $table->double('special_price')->default(0);
+            $table->double('refill_price')->default(0);
             $table->boolean('status');
             $table->timestamps();
             $table->softDeletes();

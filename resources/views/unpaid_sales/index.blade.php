@@ -29,7 +29,7 @@
                     <th>Date</th>
                     <th>Bought Products </th>
                     <th class="text-right">Total Amount</th>
-                    <th>Customer</th>
+                    <th style="width: 100px">Customer</th>
                     <th>Seller</th>
                     <th class="text-center">Status</th>
                     <th class="text-center"></th>
@@ -45,13 +45,17 @@
                                 action="{{ route('unpaid_sales.verify_payment', $unpaidGood) }}" method="post">
                                 @csrf
                                 <td>{{ ++$index }}</td>
-                                <td style="max-width: 100px">{{ Illuminate\Support\Carbon::parse($unpaidGood->created_at)->format('D, d M Y \a\t H:i:s') }}
+                                <td style="max-width: 100px">
+                                    {{ Illuminate\Support\Carbon::parse($unpaidGood->created_at)->format('D, d M Y \a\t H:i:s') }}
                                 </td>
                                 <td>
                                     @foreach ($unpaidGood->unpaidPurchases as $purchase)
                                         <div class="row">
-                                            <div class="col-4">
+                                            <div class="col">
                                                 {{ $purchase->name }} {{ $purchase->volume }} {{ $purchase->measure }}
+                                            </div>
+                                            <div class="col">
+                                                {{ $purchase->category }}
                                             </div>
                                             <div class="col">
                                                 <input type="number" style="width: 80px" max="{{ $purchase->quantity }}"
@@ -64,6 +68,9 @@
                                             <div class="col">
                                                 <input type="hidden" name="purchase_id[]" value="{{ $purchase->id }}">
                                             </div>
+                                            <div class="col text-end">
+                                                {{ number_format($purchase->price, 0, '.', ',') }} Tsh
+                                            </div>
                                         </div>
                                         <hr>
                                     @endforeach
@@ -71,7 +78,7 @@
                                 @php
                                     $total = $total + $unpaidGood->amount_paid;
                                 @endphp
-                                <td class="text-end">{{ number_format($unpaidGood->amount_paid, 0, '.', ',') }} Tsh</td>
+                                <td class="text-end"><b>{{ number_format($unpaidGood->amount_paid, 0, '.', ',') }} Tsh</b></td>
                                 @php
                                     $customer = App\Models\Customer::find($unpaidGood->customer_id);
                                 @endphp
@@ -138,7 +145,7 @@
     </script>
     <script>
         $(document).ready(function() {
-            $('#add-to-cart-form').submit(function(e) {
+            $('.add-to-cart-form').submit(function(e) {
                 e.preventDefault();
                 $.ajax({
                     url: '/cart/add',

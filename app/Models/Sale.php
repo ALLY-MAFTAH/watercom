@@ -22,6 +22,7 @@ class Sale extends Model
         'measure',
         'quantity',
         'unit',
+        'category',
         'price',
         'date',
         'type',

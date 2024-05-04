@@ -17,6 +17,34 @@
                             </div>
                             <div class="col-md-4 ">
                                 @if ($stock->product->status == 1)
+                                    @if ($stock->product->volume == 19)
+                                        <div class="py-2  my-1 shadow text-center"
+                                            style="background:white;  border-radius:5px;">
+                                            <div class="col text-center" style="color: green; font-size:20px">
+                                                <b>
+                                                   Refill - {{ number_format($stock->product->refill_price, 0, '.', ',') }}</b>
+                                                Tsh
+                                            </div>
+                                            @if ($stock->quantity < 1)
+                                                <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
+                                                    title="{{ $stock->product->name . ' sold out. Only ' . $stock->volume . ' ' . $stock->unit . ' remained.' }}">
+                                                    <button href="#" class="btn btn-sm btn-primary my-1"
+                                                        style="opacity: var(--bs-btn-disabled-opacity);cursor:auto;pointer-events: none;">
+                                                        {{ 1 . ' ' . $stock->product->unit }}
+                                                    </button>
+                                                </span>
+                                            @else
+                                                <a data-id="{{ $stock->product->id.'-Refill' }}"
+                                                    href="{{ route('add.to.cart', $stock->product->id.'-Refill') }}"
+                                                    id="add-to-cart-{{ $stock->id }}"
+                                                    class="btn btn-sm btn-primary my-1 add-to-cart-form"
+                                                    value="{{ $stock->product->id }}" role="button">
+                                                    {{ 'Add to Cart' }}
+                                                </a>
+                                            @endif
+                                        </div>
+                                    @endif
+
                                     <div class="py-2  my-1 shadow text-center"
                                         style="background:white;  border-radius:5px;">
                                         <div class="col text-center" style="color: green; font-size:20px">
@@ -33,8 +61,8 @@
                                                 </button>
                                             </span>
                                         @else
-                                            <a data-id="{{ $stock->product->id }}"
-                                                href="{{ route('add.to.cart', $stock->product->id) }}"
+                                            <a data-id="{{ $stock->product->id.'-New' }}"
+                                                href="{{ route('add.to.cart', $stock->product->id.'-New') }}"
                                                 id="add-to-cart-{{ $stock->id }}"
                                                 class="btn btn-sm btn-primary my-1 add-to-cart-form"
                                                 value="{{ $stock->product->id }}" role="button">

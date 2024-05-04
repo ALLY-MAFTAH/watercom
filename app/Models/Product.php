@@ -19,6 +19,7 @@ class Product extends Model
         'unit',
         'price',
         'special_price',
+        'refill_price',
         'measure',
         'has_discount',
         'status',

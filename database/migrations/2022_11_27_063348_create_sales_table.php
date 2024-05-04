@@ -27,6 +27,7 @@ return new class extends Migration
             $table->double('quantity');
             $table->double('volume');
             $table->string('unit');
+            $table->string('category')->nullable();
             $table->double('price');
             $table->boolean('status');
             $table->timestamps();

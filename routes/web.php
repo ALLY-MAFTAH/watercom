@@ -67,7 +67,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/carts', [SaleController::class, 'index'])->name('carts.index');
     Route::get('get-cart-data', [SaleController::class, 'getCartData'])->name('cart');
     Route::get('check-cart', [SaleController::class, 'checkCart'])->name('cart');
-    Route::post('add-to-cart/{id}', [SaleController::class, 'addToCart'])->name('add.to.cart');
+    Route::post('add-to-cart/{idcategory}', [SaleController::class, 'addToCart'])->name('add.to.cart');
     Route::patch('update-cart', [SaleController::class, 'update'])->name('update.cart');
     Route::delete('remove-from-cart', [SaleController::class, 'remove'])->name('remove.from.cart');
     Route::get('empty-cart', [SaleController::class, 'empty'])->name('empty.cart');

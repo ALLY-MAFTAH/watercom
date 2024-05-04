@@ -87,10 +87,11 @@ class SaleController extends Controller
                     'name' => $product->name,
                     'type' => $product->type,
                     'volume' => $product->volume,
-                    'measure' => $product->measure, 
+                    'measure' => $product->measure,
                     'price' => $cart['price'] * $quantity,
                     'quantity' => $quantity,
                     'unit' => $product->unit,
+                    'category' =>  $cart['category']??"",
                     'seller' => Auth::user()->name,
                     'product_id' => $product->id,
                     'user_id' => Auth::user()->id,
@@ -181,30 +182,53 @@ class SaleController extends Controller
         return response()->json(['cart' => $cart, 'customers' => $customers]);
     }
 
-    public function addToCart($id)
+    public function addToCart($idcategory)
     {
+        // return response()->json(['errorrrrrrr' => $idcategory], 200);
+
+        $parts = explode('-', $idcategory);
+        $id = $parts[0];
+        $category = $parts[1];
+
         $product = Product::findOrFail($id);
         $cart = session()->get('cart', []);
-
-        // print($cart[$id]['quantity']);
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity']++;
-            if ($cart[$id]['quantity'] >= setting('Discount Limit Quantity', 10) && $product->has_discount) {
-                $cart[$id]['price'] = $product->price - setting('Discount Amount', 200);
+        if (isset($cart[$idcategory])) {
+            $cart[$idcategory]['quantity']++;
+            if ($product->volume==19 && $cart[$idcategory]["category"]=="Refill") {
+                if ($cart[$idcategory]["quantity"] >= setting('Discount Limit Quantity', 10) && $product->has_discount) {
+                    $cart[$idcategory]["price"] = $product->refill_price - setting('Discount Amount', 200);
+                } else {
+                    $cart[$idcategory]["price"] =  $product->refill_price;
+                }
             } else {
-                $cart[$id]['price'] = $product->price;
+                if ($cart[$idcategory]["quantity"] >= setting('Discount Limit Quantity', 10) && $product->has_discount) {
+                    $cart[$idcategory]["price"] = $product->price - setting('Discount Amount', 200);
+                } else {
+                    $cart[$idcategory]["price"] =  $product->price;
+                }
+
             }
             session()->put('cart', $cart);
         } else {
-            $cart[$id] = [
-                "id" => $product->id,
+            $productPrice = 0;
+            if ($product->volume==19 && $category=="Refill") {
+                $productPrice=$product->refill_price;
+            }else{
+                $productPrice=$product->price;
+            }
+            $cart[$idcategory] = [
+                "id" => $idcategory,
+                // "id" => $product->id,
                 "name" => $product->name,
                 "quantity" => 1,
-                "price" => $product->price,
+                "price" => $productPrice,
                 "volume" => $product->volume,
                 "measure" => $product->measure,
+                "category" => $category,
             ];
             session()->put('cart', $cart);
+
+
         }
         return response()->json(['count' => count($cart)], 200);
     }
@@ -218,10 +242,18 @@ class SaleController extends Controller
             $cart = session()->get('cart');
             $cart[$request->id]["quantity"] = $request->quantity;
 
-            if ($cart[$request->id]["quantity"] >= setting('Discount Limit Quantity', 10) && $product->has_discount) {
-                $cart[$request->id]["price"] = $product->price - setting('Discount Amount', 200);
+            if ($product->volume==19 && $cart[$request->id]["category"]=="Refill") {
+                if ($cart[$request->id]["quantity"] >= setting('Discount Limit Quantity', 10) && $product->has_discount) {
+                    $cart[$request->id]["price"] = $product->refill_price - setting('Discount Amount', 200);
+                } else {
+                    $cart[$request->id]["price"] =  $product->refill_price;
+                }
             } else {
-                $cart[$request->id]["price"] =  $product->price;
+                if ($cart[$request->id]["quantity"] >= setting('Discount Limit Quantity', 10) && $product->has_discount) {
+                    $cart[$request->id]["price"] = $product->price - setting('Discount Amount', 200);
+                } else {
+                    $cart[$request->id]["price"] =  $product->price;
+                }
             }
             session()->put('cart', $cart);
         }

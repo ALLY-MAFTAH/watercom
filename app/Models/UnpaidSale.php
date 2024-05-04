@@ -22,6 +22,7 @@ class UnpaidSale extends Model
         'measure',
         'quantity',
         'unit',
+        'category',
         'unit_price',
         'price',
         'date',

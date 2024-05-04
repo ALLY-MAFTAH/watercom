@@ -72,6 +72,7 @@
                 <thead class="rounded-3 shadow ">
                     <th style="max-width: 20px">#</th>
                     <th>Name</th>
+                    <th>Category</th>
                     <th>Quantity</th>
                     <th class="text-right">Price</th>
                     <th>Date</th>
@@ -82,6 +83,7 @@
                         <tr>
                             <td>{{ ++$index }}</td>
                             <td>{{ $sale->name . ' - ' . $sale->volume . ' ' . $sale->measure }}</td>
+                            <td>{{ $sale->category }}</td>
                             <td>{{ $sale->quantity . ' ' . $sale->unit }}</td>
                             <td class="text-right">{{ number_format($sale->price, 0, '.', ',') }}
                                 Tsh</td>
@@ -136,11 +138,12 @@
                     @foreach ($boughtGoods as $index => $good)
                         <tr>
                             <td>{{ ++$index }}</td>
-                            <td>{{ Illuminate\Support\Carbon::parse($good->created_at)->format('D, d M Y \a\t H:i:s') }}</td>
+                            <td>{{ Illuminate\Support\Carbon::parse($good->created_at)->format('D, d M Y \a\t H:i:s') }}
+                            </td>
                             <td>
                                 @foreach ($good->purchases as $purchase)
                                     <div>
-                                        {{ $purchase->name }} {{ $purchase->volume }} {{ $purchase->measure }} -
+                                        {{ $purchase->name }} {{ $purchase->volume }} {{ $purchase->measure }} - {{ $purchase->category }} -
                                         {{ $purchase->quantity }} {{ $purchase->unit }},
                                     </div>
                                 @endforeach
@@ -155,8 +158,7 @@
                             @endphp
                             <td>
                                 @if ($customer)
-                                    <a style="text-decoration: none"
-                                        href="{{ route('customers.show', $customer) }}">
+                                    <a style="text-decoration: none" href="{{ route('customers.show', $customer) }}">
                                         {{ $customer->name }}</a>
                                 @else
                                     Customer not recorded
@@ -190,9 +192,10 @@
             }
         });
     </script>
-    <script>
+    {{-- <script>
         $(document).ready(function() {
-            $('#add-to-cart-form').submit(function(e) {
+            $('.add-to-cart-form').submit(function(e) {
+                console.log("SUBmiTEDDDDDD:::::::::::");
                 e.preventDefault();
                 $.ajax({
                     url: '/cart/add',
@@ -204,7 +207,7 @@
                 });
             });
         });
-    </script>
+    </script> --}}
     <script>
         jQuery(document).ready(function() {
             $(".update-cart").change(function(e) {

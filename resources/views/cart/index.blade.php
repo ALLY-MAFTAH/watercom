@@ -192,6 +192,7 @@
                 event.preventDefault();
                 var ele = $(this);
                 var id = ele.attr("data-id")
+                console.log("ID isss::::::::" + id);
                 $.ajax({
                     url: 'add-to-cart/' + id,
                     method: 'post',
@@ -212,6 +213,7 @@
                                         '<table class="dt-responsive nowrap table shadow rounded-3 table-responsive-sm  table-striped table-hover" style="width: 100%">' +
                                         '<thead class="rounded-3 shadow ">' +
                                         '<th>Product</th>' +
+                                        '<th>Category</th>' +
                                         '<th class="">Price</th>' +
                                         '<th>Quantity</th>' +
                                         '<th class="text-right">Subtotal</th>' +
@@ -227,6 +229,7 @@
                                             '<div>' + value.volume +
                                             ' ' + value.measure +
                                             '</div></td>' +
+                                            '<td>' + value.category +
                                             '<td class="price">' + value
                                             .price.toLocaleString() +
                                             ' Tsh</td>' +
@@ -453,7 +456,8 @@
             if (customerId) {
                 var confirmMessage = "Are you sure you want to save unpaid transaction for this customer?";
             } else {
-                var confirmMessage = "Are you sure you want to save unpaid transaction without selecting a customer?";
+                var confirmMessage =
+                    "Are you sure you want to save unpaid transaction without selecting a customer?";
             }
 
             if (window.confirm(confirmMessage)) {

@@ -81,6 +81,7 @@ class ProductController extends Controller
                 'measure' => 'required',
                 'price' => 'required',
                 'special_price' => 'required',
+                'refill_price' => 'required',
                 'type' => 'required',
             ]);
 

@@ -47,7 +47,7 @@
                                             <label for="order"
                                                 class=" col-form-label text-sm-start"><b>{{ __('Order Products') }}</b></label>
                                             <div
-                                                class="input-group input-group control-group after-add-more"style="margin-bottom:10px">
+                                                class="input-group control-group after-add-more"style="margin-bottom:10px">
                                                 <select id="order_name" class="input-field form-control form-select"
                                                     name="ids[]" required style="float: left;">
                                                     <option value="">{{ 'Please Select Product' }}</option>

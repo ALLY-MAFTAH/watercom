@@ -173,6 +173,7 @@
                     @endif
                     <th class="text-right">Selling Price</th>
                     <th class="text-right">Special Price</th>
+                    <th class="text-right">Refill Price</th>
                     <th>Last Updated</th>
                     @if (Auth::user()->role_id == 1)
                         <th class="text-center">Discount</th>
@@ -201,6 +202,7 @@
                             @endphp
                             <td class="text-end">{{ number_format($stock->product->price, 0, '.', ',') }} Tsh</td>
                             <td class="text-end">{{ number_format($stock->product->special_price, 0, '.', ',') }} Tsh</td>
+                            <td class="text-end">{{ number_format($stock->product->refill_price, 0, '.', ',') }} Tsh</td>
                             <td class="">{{ $stock->updated_at->format('D, d M Y \a\t H:i:s') }} </td>
                             @if (Auth::user()->role_id == 1)
                                 <td class="text-center">
@@ -389,6 +391,23 @@
                                                             </span>
                                                         @enderror
                                                     </div>
+@if ($stock->volume==19 )
+
+<div class="text-start mb-1">
+    <label for="refill_price"
+        class="col-form-label text-sm-start">{{ __('Refill Selling Price') }}</label>
+    <input id="refill_price" type="number" placeholder="Tsh"
+        class="form-control @error('refill_price') is-invalid @enderror"
+        name="refill_price"
+        value="{{ old('refill_price', $stock->product->refill_price) }}"
+        required autocomplete="price" autofocus>
+    @error('refill_price')
+        <span class="invalid-feedback" role="alert">
+            <strong>{{ $message }}</strong>
+        </span>
+    @enderror
+</div>
+@endif
                                                     <div class="row mb-1 mt-2">
                                                         <div class="text-center">
                                                             <button type="submit" class="btn btn-sm btn-primary">
