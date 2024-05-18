@@ -37,7 +37,7 @@
                             @csrf
                             @method('PUT')
                             <div class="row">
-                                <div class="col-lg-3 mb-1">
+                                <div class="col-lg-2 mb-1">
                                     <label for="name" class=" col-form-label text-sm-start">{{ __('Name') }}</label>
                                     <div class="input-group">
                                         <input id="name" type="text" placeholder=""
@@ -58,7 +58,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-lg-3 mb-1">
+                                <div class="col-lg-2 mb-1">
                                     <label for="volume" class=" col-form-label text-sm-start">{{ __('Volume') }}</label>
                                     <div class="input-group">
                                         <input id="volume" type="number" step="any" placeholder="00"
@@ -118,13 +118,43 @@
                                 </div>
                                 <div class="col-lg-2 mb-1">
                                     <label for="price"
-                                        class=" col-form-label text-sm-start">{{ __('Price (Tsh)') }}</label>
+                                        class=" col-form-label text-sm-start">{{ __('Selling Price (Tsh)') }}</label>
                                     <div class="">
                                         <input id="price" type="number" step="any" placeholder="Tsh"
                                             class="form-control @error('price') is-invalid @enderror" name="price"
                                             value="{{ old('price', $stock->product->price) }}"required
                                             autocomplete="price" autofocus>
                                         @error('price')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 mb-1">
+                                    <label for="special_price"
+                                        class=" col-form-label text-sm-start">{{ __('Special Price (Tsh)') }}</label>
+                                    <div class="">
+                                        <input id="special_price" type="number" step="any" placeholder="Tsh"
+                                            class="form-control @error('special_price') is-invalid @enderror" name="special_price"
+                                            value="{{ old('special_price', $stock->product->special_price) }}"required
+                                            autocomplete="price" autofocus>
+                                        @error('special_price')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 mb-1">
+                                    <label for="refill_price"
+                                        class=" col-form-label text-sm-start">{{ __('Refill Price (Tsh)') }}</label>
+                                    <div class="">
+                                        <input id="refill_price" type="number" step="any" placeholder="Tsh"
+                                            class="form-control @error('refill_price') is-invalid @enderror" name="refill_price"
+                                            value="{{ old('refill_price', $stock->product->refill_price) }}"required
+                                            autocomplete="price" autofocus>
+                                        @error('refill_price')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
@@ -168,6 +198,14 @@
                         <div class="row">
                             <div class="col-4"><b> Selling Price:</b> </div>
                             <div class="col-8">{{ number_format($stock->product->price, 0, '.', ',') }} Tsh</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4"><b> Special Price:</b> </div>
+                            <div class="col-8">{{ number_format($stock->product->special_price, 0, '.', ',') }} Tsh</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4"><b> Refill Price:</b> </div>
+                            <div class="col-8">{{ number_format($stock->product->refill_price, 0, '.', ',') }} Tsh</div>
                         </div>
                     <div class="row">
                         <div class="col-4"><b> Created:</b> </div>

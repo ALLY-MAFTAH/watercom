@@ -74,6 +74,7 @@ class ProductController extends Controller
     {
         $stock = Stock::findOrFail($request->stock_id);
 
+        // dd($request->all());
         try {
             $attributes = $request->validate([
                 'volume' => 'required',
@@ -87,6 +88,7 @@ class ProductController extends Controller
 
             $attributes['stock_id'] = $stock->id;
             $attributes['name'] = $stock->name;
+            // $attributes['refill_price'] = $stock->name;
 
             DB::listen(function ($query) {
                 Log::info($query->sql);
@@ -94,10 +96,12 @@ class ProductController extends Controller
             });
 
             $product->update($attributes);
-
+            // $product->save();
+            // $stock->product()->save($product);
             ActivityLogHelper::addToLog('Updated product ' . $product->name);
 
         } catch (QueryException $th) {
+            dd($th->getMessage());
 
             notify()->error('Product "' . $request->name . '" with volume of "' . $request->quantity . '" already exists.');
             return back();
