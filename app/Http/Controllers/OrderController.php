@@ -110,7 +110,7 @@ class OrderController extends Controller
             notify()->success('You have successful sent an order');
             return redirect()->back();
         } catch (QueryException $th) {
-            dd($th->getMessage());
+            // dd($th->getMessage());
             notify()->error($th->getMessage());
             return back()->with('error', 'Failed to create order');
         }

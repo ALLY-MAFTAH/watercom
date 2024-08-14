@@ -53,7 +53,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/delete-ingredient/{ingredient}', [ItemController::class, 'deleteIngredient'])->name('items.delete-ingredient');
 
     // PRODUCTS ROUTES
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products', [StockController::class, 'productsIndex'])->name('products.index');
+    // Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::post('/add-product', [ProductController::class, 'postProduct'])->name('products.add');
     Route::get('/show-product/{product}', [ProductController::class, 'showProduct'])->name('products.show');
     Route::put('/edit-product/{product}', [ProductController::class, 'putProduct'])->name('products.edit');
@@ -97,6 +98,14 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/edit-customer/{customer}', [CustomerController::class, 'putCustomer'])->name('customers.edit');
     Route::delete('/delete-customer/{customer}', [CustomerController::class, 'deleteCustomer'])->name('customers.delete');
     Route::put('customers/{customer}/status', [CustomerController::class, 'toggleStatus'])->name('customers.toggle-status');
+
+    // BATCHES ROUTES
+    Route::get('/batches', [BatchController::class, 'index'])->name('batches.index');
+    Route::post('/add-batch', [BatchController::class, 'postBatch'])->name('batches.add');
+    Route::post('/send-batch', [BatchController::class, 'saveBatch'])->name('batches.save');
+    Route::get('/show-batch/{batch}', [BatchController::class, 'showBatch'])->name('batches.show');
+    Route::put('/edit-batch/{batch}', [BatchController::class, 'putBatch'])->name('batches.edit');
+    Route::delete('/delete-batch/{batch}', [BatchController::class, 'deleteBatch'])->name('batches.delete');
 
     // ORDERS ROUTES
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');

@@ -98,7 +98,7 @@
                                                         </span>
                                                     @enderror
                                                 </select>
-                                                <input id="order_quantity" type="number" step="any" placeholder="0"
+                                                <input id="order_quantity" type="number" min="1" placeholder="0"
                                                     class="form-control @error('order_quantity') is-invalid @enderror"
                                                     name="quantities[]" value="{{ old('order_quantity') }}" required
                                                     autocomplete="order_quantity" autofocus

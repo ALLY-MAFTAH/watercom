@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BatchItem;
 use App\Models\Expense;
 use App\Models\Good;
 use App\Models\Sale;
@@ -21,11 +22,7 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
+
     public function index()
     {
         $todaysTotalAmount = 0;
@@ -42,7 +39,7 @@ class HomeController extends Controller
         $thisWeekProfit = 0;
         $thisMonthSalesAmount = 0;
         $thisMonthProfit = 0;
-        $todayDate = Carbon::now('GMT+3')->toDateString();
+        $todayDate = Carbon::now();
 
 
         try {
@@ -55,9 +52,14 @@ class HomeController extends Controller
                 $todaysLeadingProduct = Stock::find($mostFrequentProductId);
             }
             $stocks = Stock::all();
-            $stockAmount = $stocks->sum(function ($stock) {
-                return $stock->product->price * $stock->quantity;
+            $currentStock = $this->calculateCurrentStock();
+
+            $stockAmount = $stocks->sum(function ($stock) use ($currentStock) {
+                // Use the null coalescing operator to default to zero if the key doesn't exist
+                $quantity = $currentStock[$stock->id] ?? 0;
+                return $stock->product->price * $quantity;
             });
+
             $salesRevenue = Good::whereYear('date', date('Y'))->sum('amount_paid');
 
             $todayExpensesAmount=Expense::where("date","=", $todayDate)->sum('amount');
@@ -103,10 +105,7 @@ class HomeController extends Controller
             // CUSTOMER BASED
             $todaysTotalCustomers = Good::where('date', date('Y-m-d'))->count();
             $todaysTopSales = Good::where('date', date('Y-m-d'))->orderBy('amount_paid', 'desc')->paginate(5);
-        } catch (\Throwable $th) {
-            notify()->error($th->getMessage());
-            return back();
-        }
+
         return view('home.dashboard', compact(
             'todaysTotalAmount',
             'todaysSodaAmount',
@@ -124,5 +123,39 @@ class HomeController extends Controller
             'salesRevenue',
             'todayExpensesAmount',
         ));
+    }  catch (\Throwable $th) {
+        dd($th);
+        notify()->error($th->getMessage());
+        return back();
     }
+    }
+
+private function calculateCurrentStock()
+{
+    // Fetch all batch items with their respective product and batch details
+    $batchItems = BatchItem::with('batch', 'product')->get();
+
+    // Initialize an empty array to store the current stock
+    $currentStock = [];
+
+    foreach ($batchItems as $item) {
+        $productId = $item->product_id;
+        $quantity = $item->quantity;
+
+        // Determine if the batch is an addition or reduction in stock
+        if ($item->batch->type == 'IN') {
+            if (!isset($currentStock[$productId])) {
+                $currentStock[$productId] = 0;
+            }
+            $currentStock[$productId] += $quantity;
+        } elseif ($item->batch->type == 'OUT') {
+            if (!isset($currentStock[$productId])) {
+                $currentStock[$productId] = 0;
+            }
+            $currentStock[$productId] -= $quantity;
+        }
+    }
+
+    return $currentStock;
+}
 }

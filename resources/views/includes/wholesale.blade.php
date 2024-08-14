@@ -10,7 +10,8 @@
                                     <h4 style="font-weight:bolder;font-size: 20px;">{{ $stock->name }} -
                                         {{ $stock->volume }} {{ $stock->measure }}</h4>
                                     <div style="color:rgb(118, 7, 7); font-size: 15px;">Remained Quantity:
-                                        <b>{{ $stock->quantity }} </b> {{ $stock->unit }}
+                                        <b>{{ $currentStock[$stock->id] ?? 0 }} </b> {{ $stock->unit }}
+                                        {{-- <b>{{ $stock->quantity }} </b> {{ $stock->unit }} --}}
                                     </div>
                                     <a href="{{ route('stocks.show', $stock) }}" style="text-decoration: none">View</a>
                                 </div>
@@ -25,7 +26,7 @@
                                                    Refill - {{ number_format($stock->product->refill_price, 0, '.', ',') }}</b>
                                                 Tsh
                                             </div>
-                                            @if ($stock->quantity < 1)
+                                            @if ($currentStock[$stock->id] < 1)
                                                 <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
                                                     title="{{ $stock->product->name . ' sold out. Only ' . $stock->volume . ' ' . $stock->unit . ' remained.' }}">
                                                     <button href="#" class="btn btn-sm btn-primary my-1"
@@ -52,7 +53,7 @@
                                                 {{ number_format($stock->product->price, 0, '.', ',') }}</b>
                                             Tsh
                                         </div>
-                                        @if ($stock->quantity < 1)
+                                        @if ($currentStock[$stock->id] < 1)
                                             <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
                                                 title="{{ $stock->product->name . ' sold out. Only ' . $stock->volume . ' ' . $stock->unit . ' remained.' }}">
                                                 <button href="#" class="btn btn-sm btn-primary my-1"

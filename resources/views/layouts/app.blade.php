@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title> @yield('title') | {{ setting('App Name', "Tanga Watercom") }}</title>
+    <title> @yield('title') | {{ setting('App Name', 'Tanga Watercom') }}</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('images/water.png') }}">
 
 
@@ -43,10 +43,7 @@
             <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div>
 
             <div class="header_toggle ">
-                <h3
-                    style="text-shadow: 0.5px 0.5px white;font-family:Verdana, Geneva, Tahoma, sans-serif;color:var(--first-color)">
-                    {{-- <b> TANGA WATER COM</b> --}}
-                    <b>{{setting('App Name',"Tanga Watercom Depot")}}</b>
+                <h3> <b>{{ setting('App Name', 'Tanga Watercom Depot') }}</b>
                 </h3>
             </div>
             {{-- <a href="{{route('test_sms')}}" class="btn btn-dark">Send SMS</a> --}}
@@ -128,24 +125,23 @@
             </a>
             <nav class="nav">
                 <div class="nav_list overflow-auto vh-100">
-                    <a href="{{ route('home') }}"
-                        class="nav_link {{ request()->routeIs('home') ? 'active' : '' }}">
+                    <a href="{{ route('home') }}" class="nav_link {{ request()->routeIs('home') ? 'active' : '' }}">
                         <i class='bx bx-home nav_icon'></i> <span class="nav_name">Dashboard</span>
                     </a>
                     <a href="{{ route('stocks.index') }}"
                         class="nav_link {{ request()->routeIs('stocks.index') || request()->routeIs('stocks.show') ? 'active' : '' }}">
                         <i class='bx bx-layout nav_icon'></i> <span class="nav_name">Stocks</span> </a>
-                    {{-- <a href="{{ route('products.index') }}"
+                    <a href="{{ route('products.index') }}"
                         class="nav_link {{ request()->routeIs('products.index') || request()->routeIs('products.show') ? 'active' : '' }}">
                         <i class='fa fa-product-hunt fa-lg nav_icon'></i> <span class="nav_name">Products</span>
-                    </a> --}}
+                    </a>
                     <a href="{{ route('carts.index') }}"
                         class="nav_link {{ request()->routeIs('carts.index') ? 'active' : '' }}">
                         <i class='bx bx-cart nav_icon'></i> <span class="nav_name">Selling Cart</span>
                     </a>
                     <a href="{{ route('carts.special_index') }}"
                         class="nav_link {{ request()->routeIs('carts.special_index') ? 'active' : '' }}">
-                        <i class='bx bx-cart nav_icon' style="color: red"></i> <span class="nav_name" >Special Cart</span>
+                        <i class='bx bx-cart nav_icon' style="color: red"></i> <span class="nav_name">Special Cart</span>
                     </a>
                     <a href="{{ route('sales.index') }}"
                         class="nav_link {{ request()->routeIs('sales.index') || request()->routeIs('sales.show') ? 'active' : '' }}">
@@ -156,6 +152,9 @@
                     <a href="{{ route('customers.index') }}"
                         class="nav_link {{ request()->routeIs('customers.index') || request()->routeIs('customers.show') ? 'active' : '' }}">
                         <i class='fa fa-users fa-lg nav_icon'></i> <span class="nav_name">Customers</span> </a>
+                    <a href="{{ route('batches.index') }}"
+                        class="nav_link {{ request()->routeIs('batches.index') || request()->routeIs('batches.show') ? 'active' : '' }}">
+                        <i class='fa fa-first-order fa-lg nav_icon'></i> <span class="nav_name">Batches</span> </a>
                     <a href="{{ route('orders.index') }}"
                         class="nav_link {{ request()->routeIs('orders.index') || request()->routeIs('orders.show') ? 'active' : '' }}">
                         <i class='fa fa-first-order fa-lg nav_icon'></i> <span class="nav_name">Orders</span> </a>
@@ -338,9 +337,24 @@
         });
     </script>
     <script>
+        $(document).ready(function() {
+            if (window.location.href.indexOf("batches") > -1) {
+                $(document).on('submit', 'form', function() {
+                    $('button').removeAttr('disabled');
+                });
+            }
+        });
+    </script>
+    <script>
         $(document).on('submit', '#send-order-form', function() {
             console.log('Form submitted');
             $('#send-order-btn').addClass('disabled');
+        });
+    </script>
+    <script>
+        $(document).on('submit', '#save-batch-form', function() {
+            console.log('Form submitted');
+            $('#save-batch-btn').addClass('disabled');
         });
     </script>
 

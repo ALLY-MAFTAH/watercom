@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Batch;
+use App\Models\BatchItem;
 use App\Models\Good;
 use App\Models\Sale;
+use App\Models\User;
 use Illuminate\Routing\Controller;
 
 use App\Helpers\ActivityLogHelper;
@@ -99,7 +102,7 @@ class UnpaidSaleController extends Controller
                     'seller' => Auth::user()->name,
                     'product_id' => $product->id,
                     'user_id' => Auth::user()->id,
-                    'date' => Carbon::now('GMT+3')->toDateString(),
+                    'date' => Carbon::now(),
                     'stock_id' => $product->stock_id,
                     'unpaid_good_id' => 0,
                     'status' => 0,
@@ -123,7 +126,7 @@ class UnpaidSaleController extends Controller
                 'customer_id' => 0,
                 'receipt_number' => $request->receipt_number ?? "",
                 'amount_paid' => $totalAmount,
-                'date' => Carbon::now('GMT+3')->toDateString(),
+                'date' => Carbon::now(),
                 'status' => 0,
             ];
             $good = UnpaidGood::create($attribute);
@@ -200,7 +203,7 @@ class UnpaidSaleController extends Controller
                     'seller' => Auth::user()->name,
                     'product_id' => $product->id,
                     'user_id' => Auth::user()->id,
-                    'date' => Carbon::now('GMT+3')->toDateString(),
+                    'date' => Carbon::now(),
                     'stock_id' => $product->stock_id,
                     'good_id' => 0,
                     'status' => 1,
@@ -228,14 +231,46 @@ class UnpaidSaleController extends Controller
                 'customer_id' => 0,
                 'receipt_number' => $request->receipt_number ?? "",
                 'amount_paid' => $totalAmount,
-                'date' => Carbon::now('GMT+3')->toDateString(),
+                'date' => Carbon::now(),
             ];
             $good = Good::create($attribute);
-            $at = ['good_id' => $good->id];
+            $attr = ['good_id' => $good->id];
             foreach ($purchases as $purchase) {
-                $purchase->update($at);
+                $purchase->update($attr);
                 $good->purchases()->save($purchase);
             }
+
+            // BATCH OUT
+
+            $attributes = [
+                'date' => Carbon::now(),
+                'status' => true,
+                'type' => "OUT",
+                'user_id' => Auth::user()->id,
+            ];
+
+            $batch = Batch::create($attributes);
+            $user = User::find(Auth::user()->id);
+            $user->batches()->save($batch);
+
+            foreach ($purchases as $purchase) {
+                $batchItemAttributes = [
+                    'product_id' => $purchase->product_id,
+                    'name' => $purchase->name,
+                    'quantity' => $purchase->quantity,
+                    'volume' => $purchase->volume,
+                    'measure' => $purchase->measure,
+                    'unit' => $purchase->unit,
+                    'type' => $purchase->type,
+                    'status' => true,
+                    'batch_id' => $batch->id,
+                ];
+                $batchItem = BatchItem::create($batchItemAttributes);
+                $batch->batchItems()->save($batchItem);
+            }
+
+            ActivityLogHelper::addToLog('Created batch. Date: ' . $batch->date);
+
 
             if ($request->customer_id != null) {
                 $customer = Customer::findOrFail($request->customer_id);

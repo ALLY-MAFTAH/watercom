@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Batch;
+use App\Models\BatchItem;
+use App\Models\User;
 use Illuminate\Routing\Controller;
 
 use App\Helpers\ActivityLogHelper;
@@ -51,12 +54,52 @@ class SaleController extends Controller
         $selectedStockName = $filteredStockName;
         $selectedDate = $filteredDate;
 
-        $stocks = Stock::where('status', 1)->where('quantity', '>', 0)->get();
+        $activeStocks = Stock::where('status', 1)->orderBy('unit','desc')->orderBy('volume','asc')->get();
+        $stocks = [];
+        $currentStock = $this->calculateCurrentStock();
+
+        foreach ($activeStocks as $stock) {
+            // Check if the stock ID exists in the current stock array
+            if (isset($currentStock[$stock->id]) && $currentStock[$stock->id] >0) {
+                $stocks[] = $stock;
+            }
+        }
         $allStocks = Stock::all();
         $products = Product::where(['status' => 1])->get();
 
-        return view('cart.index', compact('sales', 'products', 'stocks', 'allStocks', 'filteredDate', 'filteredStockName', 'selectedStockName', 'selectedDate'));
+
+        return view('cart.index', compact('sales', 'products', 'stocks','currentStock', 'allStocks', 'filteredDate', 'filteredStockName', 'selectedStockName', 'selectedDate'));
     }
+
+
+private function calculateCurrentStock()
+{
+    // Fetch all batch items with their respective product and batch details
+    $batchItems = BatchItem::with('batch', 'product')->get();
+
+    // Initialize an empty array to store the current stock
+    $currentStock = [];
+
+    foreach ($batchItems as $item) {
+        $productId = $item->product_id;
+        $quantity = $item->quantity;
+
+        // Determine if the batch is an addition or reduction in stock
+        if ($item->batch->type == 'IN') {
+            if (!isset($currentStock[$productId])) {
+                $currentStock[$productId] = 0;
+            }
+            $currentStock[$productId] += $quantity;
+        } elseif ($item->batch->type == 'OUT') {
+            if (!isset($currentStock[$productId])) {
+                $currentStock[$productId] = 0;
+            }
+            $currentStock[$productId] -= $quantity;
+        }
+    }
+
+    return $currentStock;
+}
 
     // SELL PRODUCT
     public function saleProduct(Request $request)
@@ -70,8 +113,10 @@ class SaleController extends Controller
             $quantity = $cart['quantity'];
 
             $stock = Stock::findOrFail($product->stock_id);
-            if ($quantity > $stock->quantity) {
-                notify()->error("Sorry! You can't sell " . $quantity . " " . $product->unit . " of " . $product->name . ' - ' . $product->volume . ' ' . $product->measure . ". Quantity remained is " . $stock->quantity . " " . $product->unit);
+            $currentStock = $this->calculateCurrentStock();
+
+            if ($quantity > $currentStock[$stock->id]) {
+                notify()->error("Sorry! You can't sell " . $quantity . " " . $product->unit . " of " . $product->name . ' - ' . $product->volume . ' ' . $product->measure . ". Quantity remained is " . $currentStock[$stock->id] . " " . $product->unit);
                 return back();
             }
         }
@@ -95,7 +140,7 @@ class SaleController extends Controller
                     'seller' => Auth::user()->name,
                     'product_id' => $product->id,
                     'user_id' => Auth::user()->id,
-                    'date' => Carbon::now('GMT+3')->toDateString(),
+                    'date' => Carbon::now(),
                     'stock_id' => $product->stock_id,
                     'good_id' => 0,
                     'status' => true,
@@ -120,7 +165,7 @@ class SaleController extends Controller
                 'customer_id' => 0,
                 'receipt_number' => $request->receipt_number ?? "",
                 'amount_paid' => $totalAmount,
-                'date' => Carbon::now('GMT+3')->toDateString(),
+                'date' => Carbon::now(),
             ];
             $good = Good::create($attribute);
             $at = ['good_id' => $good->id];
@@ -128,6 +173,38 @@ class SaleController extends Controller
                 $purchase->update($at);
                 $good->purchases()->save($purchase);
             }
+
+            // BATCH OUT
+
+                $attributes = [
+                    'date' => Carbon::now(),
+                    'status' => true,
+                    'type' => "OUT",
+                    'user_id' => Auth::user()->id,
+                ];
+
+                $batch = Batch::create($attributes);
+                $user = User::find(Auth::user()->id);
+                $user->batches()->save($batch);
+
+                foreach ($purchases as $purchase) {
+                    $batchItemAttributes = [
+                        'product_id' => $purchase->product_id,
+                        'name' => $purchase->name,
+                        'quantity' => $purchase->quantity,
+                        'volume' => $purchase->volume,
+                        'measure' => $purchase->measure,
+                        'unit' => $purchase->unit,
+                        'type' => $purchase->type,
+                        'status' => true,
+                        'batch_id' => $batch->id,
+                    ];
+                    $batchItem = BatchItem::create($batchItemAttributes);
+                    $batch->batchItems()->save($batchItem);
+                }
+
+                ActivityLogHelper::addToLog('Created batch. Date: ' . $batch->date);
+
 
             if ($request->customer_id != null) {
                 $customer = Customer::findOrFail($request->customer_id);
@@ -159,7 +236,7 @@ class SaleController extends Controller
             ActivityLogHelper::addToLog('Successful sold products.');
             session()->forget('cart');
         } catch (\Throwable $th) {
-            // dd($th->getMessage());
+            dd($th->getMessage());
             notify()->error($th->getMessage());
             return back();
         }
