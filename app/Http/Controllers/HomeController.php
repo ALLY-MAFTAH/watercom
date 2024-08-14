@@ -62,7 +62,7 @@ class HomeController extends Controller
 
             $salesRevenue = Good::whereYear('date', date('Y'))->sum('amount_paid');
 
-            $todayExpensesAmount=Expense::where("date","=", $todayDate)->sum('amount');
+            $todayExpensesAmount=Expense::where("date","=", $todayDate->toDateString())->sum('amount');
             // dd($todayExpensesAmount);
 
             // WATER BASED
