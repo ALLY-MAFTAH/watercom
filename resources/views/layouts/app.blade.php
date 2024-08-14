@@ -254,7 +254,7 @@
     </main>
 
     </div>
-    {{-- <x:notify-messages /> --}}
+    <x:notify-messages />
     @yield('scripts')
     @notifyJs
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
