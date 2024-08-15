@@ -131,10 +131,12 @@
                     <a href="{{ route('stocks.index') }}"
                         class="nav_link {{ request()->routeIs('stocks.index') || request()->routeIs('stocks.show') ? 'active' : '' }}">
                         <i class='bx bx-layout nav_icon'></i> <span class="nav_name">Stocks</span> </a>
-                    <a href="{{ route('products.index') }}"
-                        class="nav_link {{ request()->routeIs('products.index') || request()->routeIs('products.show') ? 'active' : '' }}">
-                        <i class='fa fa-product-hunt fa-lg nav_icon'></i> <span class="nav_name">Products</span>
-                    </a>
+                    @if (Auth::user()->role_id == 1)
+                        <a href="{{ route('products.index') }}"
+                            class="nav_link {{ request()->routeIs('products.index') || request()->routeIs('products.show') ? 'active' : '' }}">
+                            <i class='fa fa-product-hunt fa-lg nav_icon'></i> <span class="nav_name">Products</span>
+                        </a>
+                    @endif
                     <a href="{{ route('carts.index') }}"
                         class="nav_link {{ request()->routeIs('carts.index') ? 'active' : '' }}">
                         <i class='bx bx-cart nav_icon'></i> <span class="nav_name">Selling Cart</span>
@@ -254,7 +256,7 @@
     </main>
 
     </div>
-    <x:notify-messages />
+    {{-- <x:notify-messages /> --}}
     @yield('scripts')
     @notifyJs
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])

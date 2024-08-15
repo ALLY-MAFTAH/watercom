@@ -22,13 +22,15 @@
                         </h5>
                     </div>
                 </div>
-                <div class="col text-right">
-                    <a href="#" class="btn btn-sm btn-outline-primary collapsed" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#batchInCollapse" aria-expanded="false"
-                        aria-controls="batchInCollapse">
-                        <i class="feather icon-plus"></i> BATCH IN
-                    </a>
-                </div>
+                @if (Auth::user()->role_id == 1)
+                    <div class="col text-right">
+                        <a href="#" class="btn btn-sm btn-outline-primary collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#batchInCollapse" aria-expanded="false"
+                            aria-controls="batchInCollapse">
+                            <i class="feather icon-plus"></i> BATCH IN
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
         <div class="card-body">
@@ -183,7 +185,7 @@
                         <tr>
                             <td>{{ ++$index }}</td>
                             <td>
-                                {{ Illuminate\Support\Carbon::parse($batch->date)->format('D, d M Y \a\t H:i:s')}}
+                                {{ Illuminate\Support\Carbon::parse($batch->date)->format('D, d M Y \a\t H:i:s') }}
                             </td>
                             <td>{{ $batch->type }}</td>
                             <td>
