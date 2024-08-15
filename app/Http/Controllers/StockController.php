@@ -24,7 +24,12 @@ class StockController extends Controller
     {
         $stocks = Stock::orderBy('type','DESC')->get();
 
-        return view('old_stocks.index', compact('stocks'));
+        if (Auth::user()->role_id == 1)
+        {
+            return view('old_stocks.index', compact('stocks'));
+        }else{
+            return view('auth.login', compact('stocks'));
+        }
     }
     public function index(Request $request)
     {
