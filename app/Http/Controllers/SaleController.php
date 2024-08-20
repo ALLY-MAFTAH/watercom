@@ -381,16 +381,16 @@ private function calculateCurrentStock()
 
         $sales = Sale::latest()->get();
         if ($filteredDate != "All Days" && $filteredStockId != "All Products") {
-            $sales = Sale::where(['stock_id' => $filteredStockId, 'date' => $filteredDate])->latest()->get();
+            $sales = Sale::where(['stock_id' => $filteredStockId])->whereDate( 'date', $filteredDate)->latest()->get();
         } elseif ($filteredStockId != "All Products") {
             $sales = Sale::where(['stock_id' => $filteredStockId])->latest()->get();
         } elseif ($filteredDate != "All Days") {
-            $sales = Sale::where('date', $filteredDate)->latest()->get();
+            $sales = Sale::whereDate('date', $filteredDate)->latest()->get();
         }
 
         $boughtGoods = Good::latest()->get();
         if ($filteredDate != "All Days") {
-            $boughtGoods = Good::where('date', $filteredDate)->latest()->get();
+            $boughtGoods = Good::whereDate('date', $filteredDate)->latest()->get();
         }
 
         $stocks = Stock::where('status', 1)->where('quantity', '>', 0)->get();

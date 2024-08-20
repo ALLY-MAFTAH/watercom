@@ -44,8 +44,12 @@ class HomeController extends Controller
 
         try {
             // TOTAL
-            $todaysTotalAmount = Sale::where('date', date('Y-m-d'))->sum('price');
-            $todaysTotalSales = Sale::where(['date' => date('Y-m-d')])->get();
+           // Get today's total amount
+$todaysTotalAmount = Sale::whereDate('date', date('Y-m-d'))->sum('price');
+
+// Get today's total sales
+$todaysTotalSales = Sale::whereDate('date', date('Y-m-d'))->get();
+
             $productIdFrequencies = array_count_values($todaysTotalSales->pluck('stock_id')->toArray());
             if ($productIdFrequencies != []) {
                 $mostFrequentProductId = array_search(max($productIdFrequencies), $productIdFrequencies);
