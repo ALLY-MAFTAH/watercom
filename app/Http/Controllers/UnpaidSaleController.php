@@ -76,8 +76,10 @@ class UnpaidSaleController extends Controller
             $quantity = $cart['quantity'];
 
             $stock = Stock::findOrFail($product->stock_id);
-            if ($quantity > $stock->quantity) {
-                notify()->error("Sorry! You can't sell " . $quantity . " " . $product->unit . " of " . $product->name . ' - ' . $product->volume . ' ' . $product->measure . ". Quantity remained is " . $stock->quantity . " " . $product->unit);
+            $currentStock = $this->calculateCurrentStock();
+
+            if ($quantity > $currentStock[$stock->id]) {
+                notify()->error("Sorry! You can't sell " . $quantity . " " . $product->unit . " of " . $product->name . ' - ' . $product->volume . ' ' . $product->measure . ". Quantity remained is " . $currentStock[$stock->id] . " " . $product->unit);
                 return back();
             }
         }
@@ -136,6 +138,38 @@ class UnpaidSaleController extends Controller
                 $good->unpaidPurchases()->save($purchase);
             }
 
+             // BATCH OUT
+
+             $attributes = [
+                'date' => Carbon::now(),
+                'status' => true,
+                'type' => "OUT",
+                'user_id' => Auth::user()->id,
+            ];
+
+            $batch = Batch::create($attributes);
+            $user = User::find(Auth::user()->id);
+            $user->batches()->save($batch);
+
+            foreach ($purchases as $purchase) {
+                $batchItemAttributes = [
+                    'product_id' => $purchase->product_id,
+                    'name' => $purchase->name,
+                    'quantity' => $purchase->quantity,
+                    'volume' => $purchase->volume,
+                    'measure' => $purchase->measure,
+                    'unit' => $purchase->unit,
+                    'type' => $purchase->type,
+                    'status' => true,
+                    'batch_id' => $batch->id,
+                ];
+                $batchItem = BatchItem::create($batchItemAttributes);
+                $batch->batchItems()->save($batchItem);
+            }
+
+            ActivityLogHelper::addToLog('Created batch. Date: ' . $batch->date);
+
+
             if ($request->customer_id != null) {
                 $customer = Customer::findOrFail($request->customer_id);
                 $atr = ['customer_id' => $customer->id];
@@ -174,6 +208,35 @@ class UnpaidSaleController extends Controller
         notify()->success('UnpaidSales recorded successfully');
         return Redirect::back();
     }
+
+private function calculateCurrentStock()
+{
+    // Fetch all batch items with their respective product and batch details
+    $batchItems = BatchItem::with('batch', 'product')->get();
+
+    // Initialize an empty array to store the current stock
+    $currentStock = [];
+
+    foreach ($batchItems as $item) {
+        $productId = $item->product_id;
+        $quantity = $item->quantity;
+
+        // Determine if the batch is an addition or reduction in stock
+        if ($item->batch->type == 'IN') {
+            if (!isset($currentStock[$productId])) {
+                $currentStock[$productId] = 0;
+            }
+            $currentStock[$productId] += $quantity;
+        } elseif ($item->batch->type == 'OUT') {
+            if (!isset($currentStock[$productId])) {
+                $currentStock[$productId] = 0;
+            }
+            $currentStock[$productId] -= $quantity;
+        }
+    }
+
+    return $currentStock;
+}
     public function verifyPayment(Request $request, UnpaidGood $unpaidGood)
     {
         // dd($unpaidGood->status);
@@ -214,11 +277,34 @@ class UnpaidSaleController extends Controller
 
                 if ($newQuantity < $cart['quantity']) {
                     $returnedQuantity = $cart['quantity'] - $newQuantity;
-                    $newStockQty = $stock->quantity + $returnedQuantity;
-                    $stock->update([
-                        'quantity' => $newStockQty,
-                    ]);
-                    $stock->save();
+                    // BATCH IN
+            $attributes = [
+                'date' => Carbon::now(),
+                'status' => true,
+                'type' => "IN",
+                'user_id' => Auth::user()->id,
+            ];
+
+            $batch = Batch::create($attributes);
+            $user = User::find(Auth::user()->id);
+            $user->batches()->save($batch);
+
+                $batchItemAttributes = [
+                    'product_id' => $product->id,
+                    'name' => $product->name,
+                    'quantity' => $returnedQuantity,
+                    'volume' => $product->volume,
+                    'measure' => $product->measure,
+                    'unit' => $product->unit,
+                    'type' => $product->type,
+                    'status' => true,
+                    'batch_id' => $batch->id,
+                ];
+                $batchItem = BatchItem::create($batchItemAttributes);
+                $batch->batchItems()->save($batchItem);
+
+
+            ActivityLogHelper::addToLog('Created batch. Date: ' . $batch->date);
                 }
             }
             $totalAmount = 0;
@@ -240,39 +326,7 @@ class UnpaidSaleController extends Controller
                 $good->purchases()->save($purchase);
             }
 
-            // BATCH OUT
-
-            $attributes = [
-                'date' => Carbon::now(),
-                'status' => true,
-                'type' => "OUT",
-                'user_id' => Auth::user()->id,
-            ];
-
-            $batch = Batch::create($attributes);
-            $user = User::find(Auth::user()->id);
-            $user->batches()->save($batch);
-
-            foreach ($purchases as $purchase) {
-                $batchItemAttributes = [
-                    'product_id' => $purchase->product_id,
-                    'name' => $purchase->name,
-                    'quantity' => $purchase->quantity,
-                    'volume' => $purchase->volume,
-                    'measure' => $purchase->measure,
-                    'unit' => $purchase->unit,
-                    'type' => $purchase->type,
-                    'status' => true,
-                    'batch_id' => $batch->id,
-                ];
-                $batchItem = BatchItem::create($batchItemAttributes);
-                $batch->batchItems()->save($batchItem);
-            }
-
-            ActivityLogHelper::addToLog('Created batch. Date: ' . $batch->date);
-
-
-            if ($request->customer_id != null) {
+                       if ($request->customer_id != null) {
                 $customer = Customer::findOrFail($request->customer_id);
                 $atr = ['customer_id' => $customer->id];
                 $good->update($atr);
