@@ -158,17 +158,17 @@
                             '</td>' +
                             '</tr>' + '<tr class="">' +
                             '<tr class="select-customer">' +
-                            '<td colspan="2"></td>' +
+                            '<td colspan="1"></td>' +
                             '<td  class="text-center">' +
                             '<select class="form-control customer-select">' +
-                            '<option value=""> -- Select Customer -- </option>';
+                            '<option value=""> - Select Customer - </option>';
                         $.each(cartData.customers, function(index, value) {
                             newTable += '<option value="' + value.id + '">' + value.name +
                                 '</option>';
                         });
                         newTable += '</select>' +
                             '</td>' +
-                            '<td></td>' +
+                            '<td><input style="" type="datetime-local" required class="form-control" name="dateTime" /></td>' +
                             '</tr>' +
                             '<tr class="">' +
                             '<td colspan="5" class="text-center ">' +
@@ -271,7 +271,7 @@
                                     });
                                     newTable += '</select>' +
                                         '</td>' +
-                                        '<td></td>' +
+                                        '<td><input style="" type="datetime-local" required class="form-control" name="dateTime" /></td>' +
                                         '</tr>' +
                                         '<tr class="">' +
                                         '<td colspan="5" class="text-center ">' +
@@ -429,41 +429,51 @@
             tab2Content.style.display = "block";
         });
     </script>
-    <script>
-        $('#cart-container').on('click', '.checkout-btn', function(e) {
-            e.preventDefault();
-            var customerId = $('.customer-select').val();
+   <script>
+    $('#cart-container').on('click', '.checkout-btn', function(e) {
+        e.preventDefault();
+        var customerId = $('.customer-select').val();
+        var dateTime = $('input[name="dateTime"]').val();
 
-            if (customerId) {
-                var confirmMessage = "Are you sure you want to checkout with this customer?";
-            } else {
-                var confirmMessage = "Are you sure you want to checkout without selecting a customer?";
-            }
+        if (!dateTime) {
+            alert("Please select a date and time before checking out.");
+            return;
+        }
 
-            if (window.confirm(confirmMessage)) {
-                // User confirmed, proceed with checkout
-                window.location.href = "sale-product?customer_id=" + (customerId || "") +
-                    "&_token={{ csrf_token() }}";
-            }
-        });
-    </script>
+        var confirmMessage = customerId
+            ? "Are you sure you want to checkout with this customer?"
+            : "Are you sure you want to checkout without selecting a customer?";
 
-    <script>
-        $('#cart-container').on('click', '.unpaid-btn', function(e) {
-            e.preventDefault();
-            var customerId = $('.customer-select').val();
+        if (window.confirm(confirmMessage)) {
+            window.location.href = "sale-product?customer_id=" + (customerId || "") +
+                "&dateTime=" + encodeURIComponent(dateTime) +
+                "&_token={{ csrf_token() }}";
+        }
+    });
+</script>
 
-            if (customerId) {
-                var confirmMessage = "Are you sure you want to save unpaid transaction for this customer?";
-            } else {
-                var confirmMessage =
-                    "Are you sure you want to save unpaid transaction without selecting a customer?";
-            }
 
-            if (window.confirm(confirmMessage)) {
-                window.location.href = "save-unpaid-product?customer_id=" + (customerId || "") +
-                    "&_token={{ csrf_token() }}";
-            }
-        });
-    </script>
+<script>
+    $('#cart-container').on('click', '.unpaid-btn', function(e) {
+        e.preventDefault();
+        var customerId = $('.customer-select').val();
+        var dateTime = $('input[name="dateTime"]').val();
+
+        if (!dateTime) {
+            alert("Please select a date and time before saving the unpaid transaction.");
+            return; 
+        }
+
+        var confirmMessage = customerId
+            ? "Are you sure you want to save unpaid transaction for this customer?"
+            : "Are you sure you want to save unpaid transaction without selecting a customer?";
+
+        if (window.confirm(confirmMessage)) {
+            window.location.href = "save-unpaid-product?customer_id=" + (customerId || "") +
+                "&dateTime=" + encodeURIComponent(dateTime) +
+                "&_token={{ csrf_token() }}";
+        }
+    });
+</script>
+
 @endsection

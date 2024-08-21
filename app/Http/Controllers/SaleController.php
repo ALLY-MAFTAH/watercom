@@ -104,80 +104,103 @@ private function calculateCurrentStock()
     // SELL PRODUCT
     public function saleProduct(Request $request)
     {
-        // dd(setting('App Name'));
-        $carts = session()->get('cart');
-        $purchases = [];
+        $dateTime = $request->input('dateTime');
+        if (empty($dateTime)) {
+            notify()->error('Date and time are required.');
+            return back();
+    }
+    $parsedDateTime = Carbon::parse($dateTime);
 
+    $carts = session()->get('cart');
+    $purchases = [];
+
+    foreach ($carts as $cart) {
+        $product = Product::findOrFail($cart['id']);
+        $quantity = $cart['quantity'];
+
+        $stock = Stock::findOrFail($product->stock_id);
+        $currentStock = $this->calculateCurrentStock();
+
+        if ($quantity > $currentStock[$stock->id]) {
+            notify()->error("Sorry! You can't sell " . $quantity . " " . $product->unit . " of " . $product->name . ' - ' . $product->volume . ' ' . $product->measure . ". Quantity remained is " . $currentStock[$stock->id] . " " . $product->unit);
+            return back();
+        }
+    }
+
+    try {
+        $totalAmount = 0;
+        foreach ($carts as $cart) {
+            $totalAmount = $totalAmount + $cart['price'] * $quantity;
+        }
+        $attribute = [
+            'user_id' => Auth::user()->id,
+            'seller' => Auth::user()->name,
+            'customer_id' =>$request->customer_id?? 0,
+            'receipt_number' => $request->receipt_number ?? "",
+            'amount_paid' => $totalAmount,
+            'date' => $parsedDateTime,
+        ];
+        $good = Good::create($attribute);
         foreach ($carts as $cart) {
             $product = Product::findOrFail($cart['id']);
             $quantity = $cart['quantity'];
 
             $stock = Stock::findOrFail($product->stock_id);
-            $currentStock = $this->calculateCurrentStock();
 
-            if ($quantity > $currentStock[$stock->id]) {
-                notify()->error("Sorry! You can't sell " . $quantity . " " . $product->unit . " of " . $product->name . ' - ' . $product->volume . ' ' . $product->measure . ". Quantity remained is " . $currentStock[$stock->id] . " " . $product->unit);
-                return back();
-            }
-        }
-
-        try {
-            foreach ($carts as $cart) {
-                $product = Product::findOrFail($cart['id']);
-                $quantity = $cart['quantity'];
-
-                $stock = Stock::findOrFail($product->stock_id);
-
-                $attributes = [
-                    'name' => $product->name,
-                    'type' => $product->type,
-                    'volume' => $product->volume,
-                    'measure' => $product->measure,
-                    'price' => $cart['price'] * $quantity,
-                    'quantity' => $quantity,
-                    'unit' => $product->unit,
-                    'category' =>  $cart['category']??"",
-                    'seller' => Auth::user()->name,
-                    'product_id' => $product->id,
-                    'user_id' => Auth::user()->id,
-                    'date' => Carbon::now(),
-                    'stock_id' => $product->stock_id,
-                    'good_id' => 0,
-                    'status' => true,
-                ];
-                $sale = Sale::create($attributes);
-                $stock->sales()->save($sale);
-                $purchases[] = $sale;
-
-                $newQuantity = $stock->quantity - $quantity;
-                $stock->update([
-                    'quantity' => $newQuantity,
-                ]);
-                $stock->save();
-            }
-            $totalAmount = 0;
-            foreach ($purchases as $purchase) {
-                $totalAmount = $totalAmount + $purchase->price;
-            }
-            $attribute = [
-                'user_id' => Auth::user()->id,
+            $attributes = [
+                'name' => $product->name,
+                'type' => $product->type,
+                'volume' => $product->volume,
+                'measure' => $product->measure,
+                'price' => $cart['price'] * $quantity,
+                'quantity' => $quantity,
+                'unit' => $product->unit,
+                'category' =>  $cart['category']??"",
                 'seller' => Auth::user()->name,
-                'customer_id' => 0,
-                'receipt_number' => $request->receipt_number ?? "",
-                'amount_paid' => $totalAmount,
-                'date' => Carbon::now(),
+                'product_id' => $product->id,
+                'user_id' => Auth::user()->id,
+                'date' => $parsedDateTime,
+                'stock_id' => $product->stock_id,
+                'good_id' => $good->id,
+                'status' => true,
             ];
-            $good = Good::create($attribute);
-            $at = ['good_id' => $good->id];
-            foreach ($purchases as $purchase) {
-                $purchase->update($at);
-                $good->purchases()->save($purchase);
-            }
+            $sale = Sale::create($attributes);
+            $stock->sales()->save($sale);
+            $good->purchases()->save($sale);
+            $purchases[] = $sale;
+
+            $newQuantity = $stock->quantity - $quantity;
+            $stock->update([
+                'quantity' => $newQuantity,
+            ]);
+            $stock->save();
+        }
+        // $totalAmount = 0;
+        // foreach ($purchases as $purchase) {
+        //     $totalAmount = $totalAmount + $purchase->price;
+        // }
+        // $attribute = [
+        //     'user_id' => Auth::user()->id,
+        //     'seller' => Auth::user()->name,
+        //     'customer_id' => 0,
+        //     'receipt_number' => $request->receipt_number ?? "",
+        //     'amount_paid' => $totalAmount,
+        //     'date' => $parsedDateTime,
+        // ];
+        // $good = Good::create($attribute);
+        // $at = ['good_id' => $good->id,];
+        // // dd($at);
+        // foreach ($purchases as $purchase) {
+        //     $purchase->good_id = $good->id;
+        //     $purchase->save();
+        //     $good->purchases()->save($purchase);
+        // }
+
 
             // BATCH OUT
 
                 $attributes = [
-                    'date' => Carbon::now(),
+                    'date' => $parsedDateTime,
                     'status' => true,
                     'type' => "OUT",
                     'user_id' => Auth::user()->id,
@@ -208,9 +231,9 @@ private function calculateCurrentStock()
 
             if ($request->customer_id != null) {
                 $customer = Customer::findOrFail($request->customer_id);
-                $atr = ['customer_id' => $customer->id];
-                $good->update($atr);
-                $customer->goods()->save($good);
+                // $atr = ['customer_id' => $customer->id];
+                // $good->update($atr);
+                // $customer->goods()->save($good);
 
                 // MESSAGE CONTENT
                 $heading  = "Ndugu mteja,\nUmenunua bidhaa zifuatazo kutoka kwetu\n";
@@ -236,7 +259,7 @@ private function calculateCurrentStock()
             ActivityLogHelper::addToLog('Successful sold products.');
             session()->forget('cart');
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            // dd($th->getMessage());
             notify()->error($th->getMessage());
             return back();
         }

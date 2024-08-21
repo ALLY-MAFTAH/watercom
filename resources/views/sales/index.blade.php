@@ -90,7 +90,7 @@
                             @php
                                 $totalAmount += $sale->price;
                             @endphp
-                            <td class="">{{ $sale->created_at->format('D, d M Y \a\t H:i:s') }} </td>
+                            <td class="">{{$sale->date }} </td>
                             <td>{{ $sale->seller }}</td>
                         </tr>
                     @endforeach
@@ -138,7 +138,7 @@
                     @foreach ($boughtGoods as $index => $good)
                         <tr>
                             <td>{{ ++$index }}</td>
-                            <td>{{ Illuminate\Support\Carbon::parse($good->created_at)->format('D, d M Y \a\t H:i:s') }}
+                            <td>{{ Illuminate\Support\Carbon::parse($good->date)->format('D, d M Y \a\t H:i:s') }}
                             </td>
                             <td>
                                 @foreach ($good->purchases as $purchase)

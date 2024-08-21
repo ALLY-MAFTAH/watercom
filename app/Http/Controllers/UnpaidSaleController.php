@@ -61,7 +61,13 @@ class UnpaidSaleController extends Controller
 
     public function saveUnpaidProduct(Request $request)
     {
+        $dateTime = $request->input('dateTime');
 
+        if (empty($dateTime)) {
+            notify()->error('Date and time are required.');
+            return back();
+        }
+        $parsedDateTime = Carbon::parse($dateTime);
         $carts = session()->get('cart');
         $purchases = [];
 
@@ -85,6 +91,20 @@ class UnpaidSaleController extends Controller
         }
 
         try {
+            $totalAmount = 0;
+            foreach ($carts as $cart) {
+                $totalAmount = $totalAmount + $cart['price'] * $quantity;
+            }
+            $attribute = [
+                'user_id' => Auth::user()->id,
+                'seller' => Auth::user()->name,
+                'customer_id' => 0,
+                'receipt_number' => $request->receipt_number ?? "",
+                'amount_paid' => $totalAmount,
+                'date' => $parsedDateTime,
+                'status' => 0,
+            ];
+            $good = UnpaidGood::create($attribute);
             foreach ($carts as $cart) {
                 $product = Product::findOrFail($cart['id']);
                 $quantity = $cart['quantity'];
@@ -104,12 +124,14 @@ class UnpaidSaleController extends Controller
                     'seller' => Auth::user()->name,
                     'product_id' => $product->id,
                     'user_id' => Auth::user()->id,
-                    'date' => Carbon::now(),
+                    'date' => $parsedDateTime,
                     'stock_id' => $product->stock_id,
-                    'unpaid_good_id' => 0,
+                    'unpaid_good_id' => $good->id,
                     'status' => 0,
                 ];
                 $sale = UnpaidSale::create($attributes);
+                $good->unpaidPurchases()->save($sale);
+
                 $purchases[] = $sale;
 
                 $newQuantity = $stock->quantity - $quantity;
@@ -118,30 +140,10 @@ class UnpaidSaleController extends Controller
                 ]);
                 $stock->save();
             }
-            $totalAmount = 0;
-            foreach ($purchases as $purchase) {
-                $totalAmount = $totalAmount + $purchase->price;
-            }
-            $attribute = [
-                'user_id' => Auth::user()->id,
-                'seller' => Auth::user()->name,
-                'customer_id' => 0,
-                'receipt_number' => $request->receipt_number ?? "",
-                'amount_paid' => $totalAmount,
-                'date' => Carbon::now(),
-                'status' => 0,
-            ];
-            $good = UnpaidGood::create($attribute);
-            $at = ['good_id' => $good->id];
-            foreach ($purchases as $purchase) {
-                $purchase->update($at);
-                $good->unpaidPurchases()->save($purchase);
-            }
-
              // BATCH OUT
 
              $attributes = [
-                'date' => Carbon::now(),
+                'date' => $parsedDateTime,
                 'status' => true,
                 'type' => "OUT",
                 'user_id' => Auth::user()->id,
@@ -247,6 +249,21 @@ private function calculateCurrentStock()
         $newQuantities = $request->input('new_quantity');
 
         try {
+            $totalAmount = 0;
+            foreach ($carts as $cart) {
+                $newQuantity = $newQuantities[$cart['id']];
+                $totalAmount = $totalAmount +  $cart['unit_price'] * $newQuantity;
+            }
+
+            $attribute = [
+                'user_id' => Auth::user()->id,
+                'seller' => Auth::user()->name,
+                'customer_id' => $request->customer_id??0,
+                'receipt_number' => $request->receipt_number ?? "",
+                'amount_paid' => $totalAmount,
+                'date' => $unpaidGood->date,
+            ];
+            $good = Good::create($attribute);
             foreach ($carts as $cart) {
                 $product = Product::findOrFail($cart['product_id']);
 
@@ -266,20 +283,21 @@ private function calculateCurrentStock()
                     'seller' => Auth::user()->name,
                     'product_id' => $product->id,
                     'user_id' => Auth::user()->id,
-                    'date' => Carbon::now(),
+                    'date' => $unpaidGood->date,
                     'stock_id' => $product->stock_id,
-                    'good_id' => 0,
+                    'good_id' => $good->id,
                     'status' => 1,
                 ];
                 $sale = Sale::create($attributes);
                 $stock->sales()->save($sale);
+                $good->purchases()->save($sale);
                 $purchases[] = $sale;
 
                 if ($newQuantity < $cart['quantity']) {
                     $returnedQuantity = $cart['quantity'] - $newQuantity;
                     // BATCH IN
             $attributes = [
-                'date' => Carbon::now(),
+                'date' => $unpaidGood->date,
                 'status' => true,
                 'type' => "IN",
                 'user_id' => Auth::user()->id,
@@ -307,30 +325,14 @@ private function calculateCurrentStock()
             ActivityLogHelper::addToLog('Created batch. Date: ' . $batch->date);
                 }
             }
-            $totalAmount = 0;
-            foreach ($purchases as $purchase) {
-                $totalAmount = $totalAmount + $purchase->price;
-            }
-            $attribute = [
-                'user_id' => Auth::user()->id,
-                'seller' => Auth::user()->name,
-                'customer_id' => 0,
-                'receipt_number' => $request->receipt_number ?? "",
-                'amount_paid' => $totalAmount,
-                'date' => Carbon::now(),
-            ];
-            $good = Good::create($attribute);
-            $attr = ['good_id' => $good->id];
-            foreach ($purchases as $purchase) {
-                $purchase->update($attr);
-                $good->purchases()->save($purchase);
-            }
+
+
 
                        if ($request->customer_id != null) {
                 $customer = Customer::findOrFail($request->customer_id);
-                $atr = ['customer_id' => $customer->id];
-                $good->update($atr);
-                $customer->goods()->save($good);
+                // $atr = ['customer_id' => $customer->id];
+                // $good->update($atr);
+                // $customer->goods()->save($good);
 
                 // MESSAGE CONTENT
                 $heading  =  "Ndugu ".$customer->name.",\nUmelipia bidhaa zifuatazo kutoka kwetu\n";

@@ -46,7 +46,7 @@
                                 @csrf
                                 <td>{{ ++$index }}</td>
                                 <td style="max-width: 100px">
-                                    {{ Illuminate\Support\Carbon::parse($unpaidGood->created_at)->format('D, d M Y \a\t H:i:s') }}
+                                    {{ Illuminate\Support\Carbon::parse($unpaidGood->date)->format('D, d M Y \a\t H:i:s') }}
                                 </td>
                                 <td>
                                     @foreach ($unpaidGood->unpaidPurchases as $purchase)

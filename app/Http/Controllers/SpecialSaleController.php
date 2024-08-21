@@ -103,8 +103,14 @@ class SpecialSaleController extends Controller
     // SELL PRODUCT
     public function specialSaleProduct(Request $request)
     {
-        // dd(setting('App Name'));
-        $carts = session()->get('special_cart');
+        $dateTime = $request->input('dateTime');
+
+        if (empty($dateTime)) {
+            notify()->error('Date and time are required.');
+            return back();
+        }
+        $parsedDateTime = Carbon::parse($dateTime);
+                $carts = session()->get('special_cart');
         $purchases = [];
 
         foreach ($carts as $cart) {
@@ -120,6 +126,20 @@ class SpecialSaleController extends Controller
         }
 
         try {
+            $totalAmount = 0;
+            foreach ($carts as $cart) {
+                $totalAmount = $totalAmount +  $cart['special_price'] * $quantity;
+            }
+            $attribute = [
+                'user_id' => Auth::user()->id,
+                'seller' => Auth::user()->name,
+                'customer_id' =>$request->customer_id?? 0,
+                'receipt_number' => $request->receipt_number ?? "",
+                'amount_paid' => $totalAmount,
+                'date' => $parsedDateTime,
+            ];
+            $good = Good::create($attribute);
+
             foreach ($carts as $cart) {
                 $product = Product::findOrFail($cart['id']);
                 $quantity = $cart['quantity'];
@@ -137,13 +157,14 @@ class SpecialSaleController extends Controller
                     'seller' => Auth::user()->name,
                     'product_id' => $product->id,
                     'user_id' => Auth::user()->id,
-                    'date' => Carbon::now(),
+                    'date' => $parsedDateTime,
                     'stock_id' => $product->stock_id,
-                    'good_id' => 0,
+                    'good_id' => $good->id,
                     'status' => true,
                 ];
                 $sale = Sale::create($attributes);
                 $stock->sales()->save($sale);
+                $good->purchases()->save($sale);
                 $purchases[] = $sale;
 
                 $newQuantity = $stock->quantity - $quantity;
@@ -152,29 +173,12 @@ class SpecialSaleController extends Controller
                 ]);
                 $stock->save();
             }
-            $totalAmount = 0;
-            foreach ($purchases as $purchase) {
-                $totalAmount = $totalAmount + $purchase->price;
-            }
-            $attribute = [
-                'user_id' => Auth::user()->id,
-                'seller' => Auth::user()->name,
-                'customer_id' => 0,
-                'receipt_number' => $request->receipt_number ?? "",
-                'amount_paid' => $totalAmount,
-                'date' => Carbon::now(),
-            ];
-            $good = Good::create($attribute);
-            $at = ['good_id' => $good->id];
-            foreach ($purchases as $purchase) {
-                $purchase->update($at);
-                $good->purchases()->save($purchase);
-            }
+
 
              // BATCH OUT
 
              $attributes = [
-                'date' => Carbon::now(),
+                'date' => $parsedDateTime,
                 'status' => true,
                 'type' => "OUT",
                 'user_id' => Auth::user()->id,
@@ -205,9 +209,6 @@ class SpecialSaleController extends Controller
 
             if ($request->customer_id != null) {
                 $customer = Customer::findOrFail($request->customer_id);
-                $atr = ['customer_id' => $customer->id];
-                $good->update($atr);
-                $customer->goods()->save($good);
 
                 // MESSAGE CONTENT
                 $heading  = "Ndugu mteja,\nUmenunua bidhaa zifuatazo kutoka kwetu\n";
